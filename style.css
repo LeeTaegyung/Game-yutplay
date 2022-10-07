@@ -1,0 +1,21 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body {
+    height: 100%;
+}
+body {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.yutplay {
+    border: 3px solid #252525;
+    border-radius: 5px;
+}
+canvas {
+    display: block;
+}
