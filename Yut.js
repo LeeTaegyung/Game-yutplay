@@ -1,16 +1,19 @@
 export class Yut {
-    constructor(canvasWidth, canvasHeight, margin) {
+    constructor(canvasWidth, canvasHeight, utilX, utilY, utilWidth, utilHeight) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
-        this.margin = margin || 30;
         this.fps = 0;
-        this.init();
         this.isAction = false;
+        this.utilX = utilX;
+        this.utilY = utilY;
+        this.utilWidth = utilWidth;
+        this.utilHeight = utilHeight;
         // 윷 그리기
         // 윷마다 앞인지 뒤인지 판단
         // 윷던지기 버튼
         // 윷던지기 애니메이션
         // 윷던지기 결과
+        this.init();
     }
 
     init() {
@@ -50,41 +53,15 @@ export class Yut {
         }
 
         
-        // 윷던지기 버튼 좌표
-        const canvasWidth = this.canvasWidth;
-        const canvasHeight = this.canvasHeight;
-        const innerWidth = canvasWidth - this.margin * 2;
-        const innerHeight = canvasHeight - this.margin * 2;
-        let startPointX, startPointY;
-
-        this.mode = canvasWidth > canvasHeight ? 'horizontal' : 'vertical'; // 나중에 가로모드, 세로모드 ui 다르게 구성할 예정
-        this.stageSize = Math.max(innerWidth, innerHeight) * 0.65;
-
-        if(canvasWidth > canvasHeight || canvasWidth === canvasHeight ) {
-            // 가로모드 || 정사각형모드 == 스테이지 세로중앙정렬
-            this.stageSize = this.stageSize > innerHeight ? innerHeight : this.stageSize;
-            startPointX = (this.canvasWidth - this.stageSize) / 2 - (Math.max(innerWidth, innerHeight) * 0.35) / 2;
-            startPointY = (this.canvasHeight - this.stageSize) / 2;
-        } else if (canvasWidth < canvasHeight) {
-            // 세로모드 == 스테이지 가로중앙정렬
-            this.stageSize = this.stageSize > innerWidth ? innerWidth : this.stageSize;
-            startPointX = (this.canvasWidth - this.stageSize) / 2;
-            startPointY = (this.canvasHeight - this.stageSize) / 2 - (Math.max(innerWidth, innerHeight) * 0.35) / 2;
-        }
-
-        const utilStartX = startPointX + this.stageSize + Math.max(innerWidth, innerHeight) * 0.1;
-        const utilAreaWidth = Math.max(innerWidth, innerHeight) * 0.25;
-
         // 버튼 좌표
-        const playBtnHeight = this.stageSize * 0.12;
         this.playBtn = {
             isActive: false,
-            x: utilStartX,
-            y: this.stageSize + startPointY - playBtnHeight,
-            w: utilAreaWidth,
-            h: playBtnHeight,
-            tX: utilStartX + (utilAreaWidth / 2),
-            tY: this.stageSize + startPointY - playBtnHeight / 3,
+            x: this.utilX,
+            y: this.utilY,
+            w: this.utilWidth,
+            h: this.utilHeight,
+            tX: this.utilX + (this.utilWidth / 2),
+            tY: this.utilY + this.utilHeight / 2 + 6,
             font: '16px sans-serif',
             txt: '윷던지기'
         }
@@ -108,8 +85,8 @@ export class Yut {
         })
     }
 
-    suffle() {
-        this.yutVal = this.random();
+    suffle(val) {
+        this.yutVal = val;
         let front, back;
         let suffleArr = [];
         switch(this.yutVal) {
@@ -191,7 +168,7 @@ export class Yut {
         if(this.isAction) {
             
             if(this.fps % 5 == 0 && this.fps < 100) {
-                this.suffle();
+                this.suffle(this.random());
             }
 
             ctx.beginPath();

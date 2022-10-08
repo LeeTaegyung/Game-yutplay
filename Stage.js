@@ -1,33 +1,13 @@
 export class Stage {
-    constructor(canvasWidth, canvasHeight, margin) {
-        this.canvasWidth = canvasWidth;
-        this.canvasHeight = canvasHeight;
-        this.margin = margin || 30;
+    constructor(stageSize, startX, startY) {
+        this.stageSize = stageSize;
+        this.startX = startX;
+        this.startY = startY;
 
         this.init();
     }
 
     init() {
-        const canvasWidth = this.canvasWidth;
-        const canvasHeight = this.canvasHeight;
-        const innerWidth = canvasWidth - this.margin * 2;
-        const innerHeight = canvasHeight - this.margin * 2;
-        let startPointX, startPointY;
-
-        this.mode = canvasWidth > canvasHeight ? 'horizontal' : 'vertical'; // 나중에 가로모드, 세로모드 ui 다르게 구성할 예정
-        this.stageSize = Math.max(innerWidth, innerHeight) * 0.65;
-
-        if(canvasWidth > canvasHeight || canvasWidth === canvasHeight ) {
-            // 가로모드 || 정사각형모드 == 스테이지 세로중앙정렬
-            this.stageSize = this.stageSize > innerHeight ? innerHeight : this.stageSize;
-            startPointX = (this.canvasWidth - this.stageSize) / 2 - (Math.max(innerWidth, innerHeight) * 0.35) / 2;
-            startPointY = (this.canvasHeight - this.stageSize) / 2;
-        } else if (canvasWidth < canvasHeight) {
-            // 세로모드 == 스테이지 가로중앙정렬
-            this.stageSize = this.stageSize > innerWidth ? innerWidth : this.stageSize;
-            startPointX = (this.canvasWidth - this.stageSize) / 2;
-            startPointY = (this.canvasHeight - this.stageSize) / 2 - (Math.max(innerWidth, innerHeight) * 0.35) / 2;
-        }
 
         const circleSizeBig = Math.floor(this.stageSize * 0.05);
         const circleSizeSmall = Math.floor(this.stageSize * 0.035);
@@ -37,41 +17,27 @@ export class Stage {
         this.line = {
             diagonal: [
                 {
-                    startX: startPointX,
-                    startY: startPointY,
-                    endX: this.stageSize + startPointX,
-                    endY: this.stageSize + startPointY
+                    startX: this.startX,
+                    startY: this.startY,
+                    endX: this.stageSize + this.startX,
+                    endY: this.stageSize + this.startY
                 },
                 {
-                    startX: this.stageSize + startPointX,
-                    startY: startPointY,
-                    endX: startPointX,
-                    endY: this.stageSize + startPointY
+                    startX: this.stageSize + this.startX,
+                    startY: this.startY,
+                    endX: this.startX,
+                    endY: this.stageSize + this.startY
                 }
             ],
             rect: {
-                startX: startPointX,
-                startY: startPointY,
+                startX: this.startX,
+                startY: this.startY,
             }
         }
         
 
         // const utilStartX = this.stageSize + this.margin * 2;
         // const utilAreaWidth = canvasWidth - this.stageSize - this.margin * 2 - 20;
-
-        // 버튼 좌표
-        // const playBtnHeight = this.stageSize * 0.12;
-        // this.playBtn = {
-        //     isActive: false,
-        //     x: utilStartX,
-        //     y: this.stageSize + this.margin - playBtnHeight,
-        //     w: utilAreaWidth,
-        //     h: playBtnHeight,
-        //     tX: utilStartX + (utilAreaWidth / 2),
-        //     tY: this.stageSize + this.margin - playBtnHeight / 3,
-        //     font: '16px sans-serif',
-        //     txt: '윷던지기'
-        // }
 
         // 플레이어 대기석 좌표
         // this.waiting = {
@@ -148,14 +114,14 @@ export class Stage {
                 }
 
                 this.stageDot.push({
-                    x: startPointX + x,
-                    y: startPointY + y,
+                    x: this.startX + x,
+                    y: this.startY + y,
                     size: size
                 })
 
                 this.stageDotOut.push({
-                    x: startPointX + x,
-                    y: startPointY + y,
+                    x: this.startX + x,
+                    y: this.startY + y,
                     size: size
                 })
 
@@ -173,23 +139,23 @@ export class Stage {
                     // 오른쪽 위부터 시작
                     x = this.stageSize - innerPer * v;
                     this.stageDotInToRight.push({
-                        x: startPointX + x,
-                        y: startPointY + y,
+                        x: this.startX + x,
+                        y: this.startY + y,
                         size: size
                     })
                 } else if(i == 1) {
                     // 왼쪽 위부터 시작
                     x = 0 + innerPer * v;
                     this.stageDotInToLeft.push({
-                        x: startPointX + x,
-                        y: startPointY + y,
+                        x: this.startX + x,
+                        y: this.startY + y,
                         size: size
                     })
                 }
 
                 this.stageDot.push({
-                    x: startPointX + x,
-                    y: startPointY + y,
+                    x: this.startX + x,
+                    y: this.startY + y,
                     size: size
                 })
             }
@@ -197,8 +163,8 @@ export class Stage {
 
         // 마지막 골인 좌표 저장
         this.stageDot.push({
-            x: startPointX + this.stageSize,
-            y: startPointY + this.stageSize,
+            x: this.startX + this.stageSize,
+            y: this.startY + this.stageSize,
             size: circleSizeBig
         })
     }
@@ -229,17 +195,6 @@ export class Stage {
             ctx.fill();
             ctx.closePath();
         }
-
-        // 윷던지기 버튼 그리기
-        // ctx.beginPath();
-        // ctx.fillStyle = '#252525';
-        // ctx.fillRect(this.playBtn.x, this.playBtn.y, this.playBtn.w, this.playBtn.h);
-        
-        // ctx.fillStyle = '#fff';
-        // ctx.font = this.playBtn.font;
-        // ctx.textAlign = 'center';
-        // ctx.fillText(this.playBtn.txt, this.playBtn.tX, this.playBtn.tY);
-        // ctx.closePath();
 
         // 대기석 그리기
         // for(let i = 1; i < 3; i++) {

@@ -8,27 +8,19 @@ class YutPlay {
         this.ctx = this.canvas.getContext('2d');
         this.target.append(this.canvas);
 
-        this.canvas.width = opt.canvasWidth || 500;
-        this.canvas.height = opt.canvasHeight || 400;
-
-        this.stage = new Stage(this.canvas.width, this.canvas.height);
-        this.yut = new Yut(this.canvas.width, this.canvas.height);
-
-        
-        // this.horse = [];
-
-        // for(let i = 0; i < 8; i++) {
-        //     let player = i < 4 ? 'player1' : 'player2';
-        //     let color = i < 4 ? 'red' : 'blue';
-        //     let horse = new Horse(player, this.stage.horse[i].wX, this.stage.horse[i].wY, color, this.stage.horse[i].size, this.stage.stageDot[0].x, this.stage.stageDot[0].y);
-        //     this.horse.push(horse);
-        // }
-
+        this.canvas.width = opt.canvasWidth || 600;
+        this.canvas.height = opt.canvasHeight || 500;
+        this.margin = opt.margin || 30;
 
         this.resize();
         window.addEventListener('resize', this.resize.bind(this), false);
         this.canvas.addEventListener('mousemove', this.onUp.bind(this), false);
         this.canvas.addEventListener('click', this.onClick.bind(this), false);
+        
+        this.stage = new Stage(this.stageSize, this.stageX, this.stageY);
+        this.yut = new Yut(this.canvas.width, this.canvas.height, this.utilX, this.utilY, this.utilWidth, this.utilHeight);
+
+        console.log(this.yut);
 
         window.requestAnimationFrame(this.animate.bind(this));
         
@@ -36,6 +28,52 @@ class YutPlay {
 
     resize() {
         this.rect = this.canvas.getBoundingClientRect();
+
+        this.innerWidth = this.canvas.width - this.margin * 2;
+        this.innerHeight = this.canvas.height - this.margin * 2;
+        this.stageSize = Math.max(this.innerWidth, this.innerHeight) * 0.6;
+
+        this.mode = this.canvas.width >= this.canvas.height ? this.horizontal() : 'vertical';
+
+    }
+
+    horizontal() {
+        // 가로모드
+        this.stageSize = this.stageSize > this.innerHeight * 0.75 ? this.innerHeight * 0.75 : this.stageSize;
+
+        const UtilMargin = 30; // 윷던지기 관련 영역 여백
+        const UtilHeight = 50; // 윷던지기 관련 영역 높이
+        const WaitingMargin = this.innerWidth * 0.05; // 대기석 여백
+        const WaitingWidth = this.innerWidth * 0.15; // 대기석 가로사이즈
+        const StartY = (this.canvas.height - (this.stageSize + UtilMargin + UtilHeight)) / 2;
+        const StartX = (this.canvas.width - (this.stageSize + WaitingMargin * 2 + WaitingWidth * 2)) / 2;
+
+        // 스테이지 시작 좌표
+        this.stageY = StartY;
+        this.stageX = StartX + WaitingMargin + WaitingWidth;
+
+        // 플레이어1 대기석 시작 좌표
+        this.playerY1 = StartY;
+        this.playerX1 = StartX;
+
+        // 플레이어2 대기석 시작 좌표
+        this.playerY2 = StartY;
+        this.playerX2 = StartX + this.stageSize + WaitingMargin;
+
+        // 윷던지기 관련 영역 시작 좌표
+        this.utilY = StartY + this.stageSize + UtilMargin;
+        this.utilX = StartX + WaitingMargin + WaitingWidth;
+        this.utilWidth = this.stageSize;
+        this.utilHeight = UtilHeight;
+
+    }
+
+    vertical() {
+        // 세로모드
+        this.stageSize = this.stageSize > this.innerWidth ? this.innerWidth : this.stageSize;
+        startPointX = (this.canvasWidth - this.stageSize) / 2;
+        startPointY = (this.canvasHeight - this.stageSize) / 2 - (Math.max(innerWidth, innerHeight) * 0.35) / 2;
+
     }
 
     animate() {

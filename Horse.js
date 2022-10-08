@@ -16,7 +16,6 @@ export class Horse {
         this.selected = false;
         this.goal = false;
         this.current = false;
-        
     }
 
     draw(ctx) {
