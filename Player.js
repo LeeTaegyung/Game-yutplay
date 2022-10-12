@@ -1,28 +1,79 @@
 import { Horse } from './Horse.js';
 
 export class Player {
-    constructor(name, color, size) {
+    constructor(name, color, waitingX, waitingY, waitingWidth, waitingHeight) {
         this.name = name;
         this.color = color;
-        this.size = size;
         this.current = false;
+        this.waitingX = waitingX;
+        this.waitingY = waitingY;
+        this.waitingWidth = waitingWidth;
+        this.waitingHeight = waitingHeight;
 
         this.init();
     }
 
     init() {
-        
-        // this.horse = [];
+        const waitingTextHeight = 24;
+        // 플레이어 대기석 좌표
+        this.waiting = {
+            x: this.waitingX,
+            y: this.waitingY,
+            w: this.waitingWidth,
+            h: this.waitingHeight,
+            inh: this.waitingHeight - waitingTextHeight,
+            th: waitingTextHeight,
+            tX: this.waitingX + (this.waitingWidth / 2),
+            tY: this.waitingY + (waitingTextHeight / 3 * 2),
+            txt: this.name,
+            font: '13px sans-serif',
+        }
 
-        // for(let i = 0; i < 8; i++) {
-        //     let player = i < 4 ? 'player1' : 'player2';
-        //     let color = i < 4 ? 'red' : 'blue';
-        //     let horse = new Horse(player, this.stage.horse[i].wX, this.stage.horse[i].wY, color, this.stage.horse[i].size, this.stage.stageDot[0].x, this.stage.stageDot[0].y);
-        //     this.horse.push(horse);
-        // }
+        // 플레이어 말 좌표값 설정
+        const horseSize = Math.min(this.waiting.inh / 2 * 0.8, this.waitingWidth / 2 * 0.8) / 2;
+        const horseWaitingX = this.waitingX + this.waitingWidth / 4;
+        const horseWaitingY = this.waitingY + this.waiting.th + this.waiting.inh/4;
+        
+        this.horse = [];
+
+        for(let i = 0; i < 4; i++) {
+            let x = i % 2 ? 0 : this.waitingWidth / 2;
+            let y = i < 2 ? 0 : this.waiting.inh / 2;
+            let wX = horseWaitingX + x;
+            let wY = horseWaitingY + y;
+
+            this.horse[i] = new Horse(wX, wY, this.color, horseSize);
+        }
+        
     }
 
-    draw() {
+    draw(ctx) {
         
+        // 대기석 그리기
+        ctx.beginPath();
+
+        ctx.fillStyle = '#252525';
+        ctx.strokeStyle = '#252525';
+        ctx.strokeRect(this.waiting.x, this.waiting.y, this.waiting.w, this.waiting.h);
+        ctx.fillRect(this.waiting.x, this.waiting.y, this.waiting.w, this.waiting.th);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = this.waiting.font;
+        ctx.textAlign = 'center';
+        ctx.fillText(this.waiting.txt, this.waiting.tX, this.waiting.tY);
+
+        ctx.closePath();
+
+        // 말 그리기
+        for(let i = 0; i < this.horse.length; i++) {
+            this.horse[i].draw(ctx);
+        }
+        
+    }
+
+    areaIn(x, y) {
+        for(let i = 0; i < this.horse.length; i++) {
+            this.horse[i].areaIn(x, y);
+        }
     }
 }

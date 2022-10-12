@@ -34,52 +34,6 @@ export class Stage {
                 startY: this.startY,
             }
         }
-        
-
-        // const utilStartX = this.stageSize + this.margin * 2;
-        // const utilAreaWidth = canvasWidth - this.stageSize - this.margin * 2 - 20;
-
-        // 플레이어 대기석 좌표
-        // this.waiting = {
-        //     x: utilStartX,
-        //     w: utilAreaWidth,
-        //     h: this.stageSize * 0.3,
-        //     inh: this.stageSize * 0.3 * 0.8,
-        //     th: this.stageSize * 0.3 * 0.2,
-        //     tX: utilStartX + utilAreaWidth / 2,
-        //     font: '13px sans-serif',
-        //     player1: {
-        //         y: this.margin,
-        //         tY: this.margin + (this.stageSize * 0.3 * 0.2) / 1.5,
-        //         txt: '1P',
-        //     },
-        //     player2: {
-        //         y: this.margin + this.stageSize * 0.3 + 10,
-        //         tY: this.margin + this.stageSize * 0.3 + 10 + (this.stageSize * 0.3 * 0.2) / 1.5,
-        //         txt: '2P',
-        //     }
-        // }
-
-        // // 플레이어 말 좌표값 설정
-        // const horseSize = Math.min(this.waiting.inh / 2 * 0.8, utilAreaWidth / 2 * 0.8)/2;
-        // const horseWaitingX = utilStartX + utilAreaWidth/4;
-        // const horseWaitingY = this.margin + this.waiting.th + this.waiting.inh/4;
-
-        // this.horse = [];
-        // for(let v = 0; v < 2; v++) {
-        //     for(let i = 0; i < 4; i ++) {
-        //         let x = i < 2 ? 0 : utilAreaWidth/2;
-        //         let y = i % 2 ? 0 : this.waiting.inh/2;
-        //         let wX = horseWaitingX + x;
-        //         let wY = horseWaitingY + y  + (this.waiting.h + 10) * v;
-
-        //         this.horse.push({
-        //             wX: wX,
-        //             wY: wY,
-        //             size: horseSize
-        //         })
-        //     }
-        // }
 
         this.stageDot = []; // 그리기용 좌표값 저장
         this.stageDotOut = []; // 찾기용 값 바깥라인 저장
@@ -196,22 +150,6 @@ export class Stage {
             ctx.closePath();
         }
 
-        // 대기석 그리기
-        // for(let i = 1; i < 3; i++) {
-        //     ctx.beginPath();
-
-        //     ctx.fillStyle = '#252525';
-        //     ctx.strokeRect(this.waiting.x, this.waiting['player' + i].y, this.waiting.w, this.waiting.h);
-        //     ctx.fillRect(this.waiting.x, this.waiting['player' + i].y, this.waiting.w, this.waiting.th);
-
-        //     ctx.fillStyle = '#fff';
-        //     ctx.font = this.waiting.font;
-        //     ctx.textAlign = 'center';
-        //     ctx.fillText(this.waiting['player' + i].txt, this.waiting.tX, this.waiting['player' + i].tY);
-
-        //     ctx.closePath();
-        // }
-        
     }
 
 }

@@ -1,21 +1,17 @@
 export class Horse {
-    constructor(player, wX, wY, bgColor, size, stageStartX, stageStartY) {
+    constructor(wX, wY, bgColor, size) {
         // 말 세팅(좌표값, 색상 등등)
         // 말 움직이기
         // 말 그리기
-        this.player = player;
         this.wX = wX;
         this.wY = wY;
         this.sX = undefined;
         this.sY = undefined;
         this.bgColor = bgColor;
         this.size = size;
-        this.stageStartX = stageStartX;
-        this.stageStartY = stageStartY;
         this.select = false;
-        this.selected = false;
+        // this.selected = false;
         this.goal = false;
-        this.current = false;
     }
 
     draw(ctx) {
@@ -31,13 +27,13 @@ export class Horse {
         
         ctx.fillStyle = '#fff';
 
-        if(this.current) {
-            if(this.selected && this.select) {
-                ctx.fillText('select', x, y + txtH / 2);
-            } else if(!this.selected) {
-                ctx.fillText('click', x, y + txtH / 2);
-            }
-        }
+        // if(this.current) {
+        //     if(this.selected && this.select) {
+        //         ctx.fillText('select', x, y + txtH / 2);
+        //     } else if(!this.selected) {
+        //         ctx.fillText('click', x, y + txtH / 2);
+        //     }
+        // }
 
         ctx.closePath();
         
@@ -50,8 +46,7 @@ export class Horse {
         if(horseX - this.size <= x && 
             horseY - this.size <= y && 
             horseX + this.size >= x && 
-            horseY + this.size >= y &&
-            this.current
+            horseY + this.size >= y
         ) {
             return true;
         } else {
@@ -75,20 +70,20 @@ export class Horse {
         }
     }
 
-    catch() {
-        this.select = true;
-        if(this.sX == undefined && this.sY == undefined) {
-            this.update(this.stageStartX, this.stageStartY);
-        }
-    }
+    // catch() {
+    //     this.select = true;
+    //     if(this.sX == undefined && this.sY == undefined) {
+    //         this.update(this.stageStartX, this.stageStartY);
+    //     }
+    // }
 
-    put() {
-        this.select = false;
-        if(this.sX == this.stageStartX && this.sY == this.stageStartY) {
-            this.update(undefined, undefined);
-        }
+    // put() {
+    //     this.select = false;
+    //     if(this.sX == this.stageStartX && this.sY == this.stageStartY) {
+    //         this.update(undefined, undefined);
+    //     }
 
-    }
+    // }
 
     update(x, y) {
         this.sX = x;

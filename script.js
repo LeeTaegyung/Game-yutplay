@@ -1,3 +1,4 @@
+import { Player } from "./Player.js";
 import { Stage } from "./Stage.js";
 import { Yut } from "./Yut.js";
 
@@ -8,8 +9,8 @@ class YutPlay {
         this.ctx = this.canvas.getContext('2d');
         this.target.append(this.canvas);
 
-        this.canvas.width = opt.canvasWidth || 600;
-        this.canvas.height = opt.canvasHeight || 500;
+        this.canvas.width = opt.canvasWidth || 500;
+        this.canvas.height = opt.canvasHeight || 400;
         this.margin = opt.margin || 30;
 
         this.resize();
@@ -20,7 +21,26 @@ class YutPlay {
         this.stage = new Stage(this.stageSize, this.stageX, this.stageY);
         this.yut = new Yut(this.canvas.width, this.canvas.height, this.utilX, this.utilY, this.utilWidth, this.utilHeight);
 
-        console.log(this.yut);
+        this.players = [];
+
+        for(let i = 0; i < 2; i++) {
+            let name, color, waitingX, waitingY;
+            if(i == 0) {
+                name = 'player1';
+                color = 'red';
+                waitingX = this.playerX1;
+                waitingY = this.playerY1;
+            } else {
+                name = 'player2';
+                color = 'blue';
+                waitingX = this.playerX2;
+                waitingY = this.playerY2;
+            }
+
+            this.players[i] = new Player(name, color, waitingX, waitingY, this.waitingWidth, this.waitingHeight)
+        }
+
+        // console.log(this.yut);
 
         window.requestAnimationFrame(this.animate.bind(this));
         
@@ -45,6 +65,7 @@ class YutPlay {
         const UtilHeight = 50; // 윷던지기 관련 영역 높이
         const WaitingMargin = this.innerWidth * 0.05; // 대기석 여백
         const WaitingWidth = this.innerWidth * 0.15; // 대기석 가로사이즈
+        const WaitingHeight = this.innerHeight * 0.22; // 대기석 세로사이즈
         const StartY = (this.canvas.height - (this.stageSize + UtilMargin + UtilHeight)) / 2;
         const StartX = (this.canvas.width - (this.stageSize + WaitingMargin * 2 + WaitingWidth * 2)) / 2;
 
@@ -52,13 +73,16 @@ class YutPlay {
         this.stageY = StartY;
         this.stageX = StartX + WaitingMargin + WaitingWidth;
 
+        this.waitingWidth = WaitingWidth;
+        this.waitingHeight = WaitingHeight;
+
         // 플레이어1 대기석 시작 좌표
         this.playerY1 = StartY;
         this.playerX1 = StartX;
 
         // 플레이어2 대기석 시작 좌표
         this.playerY2 = StartY;
-        this.playerX2 = StartX + this.stageSize + WaitingMargin;
+        this.playerX2 = StartX + this.stageSize + WaitingMargin * 2 + WaitingWidth;
 
         // 윷던지기 관련 영역 시작 좌표
         this.utilY = StartY + this.stageSize + UtilMargin;
@@ -86,7 +110,13 @@ class YutPlay {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.stage.draw(this.ctx);
+
+        for(let i = 0; i < this.players.length; i++) {
+            this.players[i].draw(this.ctx);
+        }
+
         this.yut.draw(this.ctx);
+
     }
 
     onUp(e) {
@@ -99,12 +129,11 @@ class YutPlay {
             this.canvas.style = 'cursor: pointer';
         }
 
-        // for(let i = 0; i < this.horse.length; i++) {
-        //     if((this.stage.areaIn(x, y) && !this.yutAction && this.yutNumber == 1) || 
-        //         (this.horse[i].areaIn(x, y))) {
-        //         this.canvas.style = 'cursor: pointer';
-        //     }
-        // }
+        for(let i = 0; i < this.players.length; i++) {
+            if(this.players[i].areaIn(x, y)) {
+                this.canvas.style = 'cursor: pointer';
+            }
+        }
 
     }
 
@@ -115,15 +144,16 @@ class YutPlay {
 
         // 윷던지기 버튼 클릭시
         if(this.yut.areaIn(x, y)) {
-            //  && !this.yutAction && this.yutNumber == 1
             this.yut.play();
             return;
-            this.yutAction = true; // 애니메이션 시작
-            this.yutFps = 0; // 애니메이션을 위한 fps 초기화
-            this.yutNumber--; // 윷 던질 횟수 차감
         }
 
         // 말 클릭시
+        // for(let i = 0; i < this.players.length; i++) {
+        //     if(this.players[i].areaIn(x, y)) {
+        //         this.players.horseMove();
+        //     }
+        // }
         // this.horse.forEach(ele => {
             
         //     if(ele.areaIn(x, y)) { //말의 영역 안에서 클릭했는지 확인

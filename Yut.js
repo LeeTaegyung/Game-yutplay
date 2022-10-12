@@ -135,22 +135,34 @@ export class Yut {
 
     }
 
-    play() {
 
-        // 이렇게 하면 브레이크를 걸어 줄 수 있음.
-        // if(!this.test) {
-        //     this.test = true;
-        //     console.log('윷던지기를 실행할수없다');
-        //     setTimeout(() => {
-        //         this.test = false;
-        //         console.log('윷던지기를 실행할 수 있다.')
-        //     }, 2000)
-        // }
+    play() {
+        let ani;
 
         this.isAction = true;
         this.fps = 0;
 
+        ani = window.requestAnimationFrame(animate.bind(this));
+
+        function animate() {
+            if(this.fps % 5 == 0 && this.fps < 100) {
+                this.suffle(this.random());
+            }
+    
+            this.fps++;
+    
+            ani = window.requestAnimationFrame(animate.bind(this));
+            
+            if(this.fps >= 120) {
+                this.isAction = false;
+                window.cancelAnimationFrame(ani);
+            }
+
+        }
+
+
     }
+
 
     draw(ctx) {
         
@@ -167,10 +179,6 @@ export class Yut {
 
         if(this.isAction) {
             
-            if(this.fps % 5 == 0 && this.fps < 100) {
-                this.suffle(this.random());
-            }
-
             ctx.beginPath();
             ctx.fillStyle = 'rgba(0,0,0,0.5)';
             ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
@@ -211,11 +219,6 @@ export class Yut {
                 ctx.closePath();
             }
 
-            if(this.fps >= 120) {
-                this.isAction = false;
-            }
-
-            this.fps++;
 
         }
 
@@ -226,7 +229,8 @@ export class Yut {
         if(this.playBtn.x <= x && 
             this.playBtn.y <= y && 
             this.playBtn.x + this.playBtn.w >= x && 
-            this.playBtn.y + this.playBtn.h >= y
+            this.playBtn.y + this.playBtn.h >= y &&
+            !this.isAction
         ) {
             return true;
         } else {
