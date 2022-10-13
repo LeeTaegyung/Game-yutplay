@@ -86,27 +86,27 @@ export class Yut {
     }
 
     suffle(val) {
-        this.yutVal = val;
+        this.yutVal = val + 1;
         let front, back;
         let suffleArr = [];
         switch(this.yutVal) {
-            case 0: // 도
+            case 1: // 도
                 front = 1;
                 back = 3;
                 break;
-            case 1: // 개
+            case 2: // 개
                 front = 2;
                 back = 2;
                 break;
-            case 2: // 걸
+            case 3: // 걸
                 front = 3;
                 back = 1;
                 break;
-            case 3: // 윷
+            case 4: // 윷
                 front = 0;
                 back = 4;
                 break;
-            case 4: // 모
+            case 5: // 모
                 front = 4;
                 back = 0;
                 break;
@@ -137,30 +137,27 @@ export class Yut {
 
 
     play() {
-        let ani;
 
         this.isAction = true;
         this.fps = 0;
 
-        ani = window.requestAnimationFrame(animate.bind(this));
+        this.ani = window.requestAnimationFrame(this.animate.bind(this));
 
-        function animate() {
-            if(this.fps % 5 == 0 && this.fps < 100) {
-                this.suffle(this.random());
-            }
-    
-            this.fps++;
-    
-            ani = window.requestAnimationFrame(animate.bind(this));
-            
-            if(this.fps >= 120) {
-                this.isAction = false;
-                window.cancelAnimationFrame(ani);
-            }
+    }
 
+    animate() {
+        if(this.fps % 5 == 0 && this.fps < 100) {
+            this.suffle(this.random());
         }
 
+        this.fps++;
 
+        this.ani = window.requestAnimationFrame(this.animate.bind(this));
+        
+        if(this.fps >= 120) {
+            this.isAction = false;
+            window.cancelAnimationFrame(this.ani);
+        }
     }
 
 

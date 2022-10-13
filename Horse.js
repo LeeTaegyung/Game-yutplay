@@ -1,22 +1,20 @@
 export class Horse {
     constructor(wX, wY, bgColor, size) {
-        // 말 세팅(좌표값, 색상 등등)
-        // 말 움직이기
-        // 말 그리기
         this.wX = wX;
         this.wY = wY;
         this.sX = undefined;
         this.sY = undefined;
         this.bgColor = bgColor;
         this.size = size;
+        // this.active = false;
         this.select = false;
-        // this.selected = false;
         this.goal = false;
     }
 
     draw(ctx) {
         let x = this.sX != undefined ? this.sX : this.wX;
         let y = this.sY != undefined ? this.sY : this.wY;
+
         ctx.beginPath();
         ctx.fillStyle = this.bgColor;
         ctx.arc(x, y, this.size, 0, 2 * Math.PI);
@@ -27,12 +25,13 @@ export class Horse {
         
         ctx.fillStyle = '#fff';
 
-        // if(this.current) {
-        //     if(this.selected && this.select) {
+        // if(this.active) {
+        //     // ctx.fillText('click', x, y + txtH / 2);
+
+        //     if(this.select) {
         //         ctx.fillText('select', x, y + txtH / 2);
-        //     } else if(!this.selected) {
-        //         ctx.fillText('click', x, y + txtH / 2);
         //     }
+            
         // }
 
         ctx.closePath();
@@ -54,21 +53,9 @@ export class Horse {
         }
     }
 
-    currentCheck(current) {
-        if(this.player == current) {
-            this.current = true;
-        } else {
-            this.current = false;
-        }
-    }
-
-    selectCheck(num, current) {
-        if(num == 1 && this.player == current) {
-            this.selected = true;
-        } else {
-            this.selected = false;
-        }
-    }
+    // isSelect() {
+    //     this.select = true;
+    // }
 
     // catch() {
     //     this.select = true;

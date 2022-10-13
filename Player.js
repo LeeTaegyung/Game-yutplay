@@ -71,9 +71,18 @@ export class Player {
         
     }
 
-    areaIn(x, y) {
-        for(let i = 0; i < this.horse.length; i++) {
-            this.horse[i].areaIn(x, y);
+    currentCheck(current) {
+        if(this.name == current) {
+            this.current = true;
+            // for(let i = 0; i < this.horse.length; i++) {
+            //     this.horse[i].active = true;
+            // }
+
+        } else {
+            this.current = false;
+            // for(let i = 0; i < this.horse.length; i++) {
+            //     this.horse[i].active = false;
+            // }
         }
     }
 }

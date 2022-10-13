@@ -13,6 +13,10 @@ class YutPlay {
         this.canvas.height = opt.canvasHeight || 400;
         this.margin = opt.margin || 30;
 
+        this.current = 'player1';
+        this.yutResult = [];
+        this.throwYut = 1;
+
         this.resize();
         window.addEventListener('resize', this.resize.bind(this), false);
         this.canvas.addEventListener('mousemove', this.onUp.bind(this), false);
@@ -37,10 +41,8 @@ class YutPlay {
                 waitingY = this.playerY2;
             }
 
-            this.players[i] = new Player(name, color, waitingX, waitingY, this.waitingWidth, this.waitingHeight)
+            this.players[i] = new Player(name, color, waitingX, waitingY, this.waitingWidth, this.waitingHeight);
         }
-
-        // console.log(this.yut);
 
         window.requestAnimationFrame(this.animate.bind(this));
         
@@ -65,7 +67,7 @@ class YutPlay {
         const UtilHeight = 50; // 윷던지기 관련 영역 높이
         const WaitingMargin = this.innerWidth * 0.05; // 대기석 여백
         const WaitingWidth = this.innerWidth * 0.15; // 대기석 가로사이즈
-        const WaitingHeight = this.innerHeight * 0.22; // 대기석 세로사이즈
+        const WaitingHeight = this.innerHeight * 0.25; // 대기석 세로사이즈
         const StartY = (this.canvas.height - (this.stageSize + UtilMargin + UtilHeight)) / 2;
         const StartX = (this.canvas.width - (this.stageSize + WaitingMargin * 2 + WaitingWidth * 2)) / 2;
 
@@ -119,19 +121,29 @@ class YutPlay {
 
     }
 
+    currentCheck() {
+        for(let i = 0; i < this.players.length; i++) {
+            this.players[i].currentCheck(this.current);
+        }
+    }
+
     onUp(e) {
         let x = e.clientX - this.rect.left,
             y = e.clientY - this.rect.top;
 
         this.canvas.style = 'cursor: default';
 
-        if(this.yut.areaIn(x, y)) {
+        // 윷던지기 버튼 hover
+        if(this.yut.areaIn(x, y) && this.throwYut == 1) {
             this.canvas.style = 'cursor: pointer';
         }
 
+        // 말 hover
         for(let i = 0; i < this.players.length; i++) {
-            if(this.players[i].areaIn(x, y)) {
-                this.canvas.style = 'cursor: pointer';
+            for(let v = 0; v < this.players[i].horse.length; v++) {
+                if(this.players[i].horse[v].areaIn(x, y) && this.players[i].current) {
+                    this.canvas.style = 'cursor: pointer';
+                }
             }
         }
 
@@ -143,12 +155,42 @@ class YutPlay {
             y = e.clientY - this.rect.top;
 
         // 윷던지기 버튼 클릭시
-        if(this.yut.areaIn(x, y)) {
+        if(this.yut.areaIn(x, y) && this.throwYut == 1) {
             this.yut.play();
+
+            this.throwYut--; // 기회 차감
+
+            setTimeout(() => { // 애니메이션이 끝나고 값을 받아와야해서 setTimeout 사용
+                this.currentCheck();
+                this.yutResult.push(this.yut.yutVal);
+
+                if(this.yut.yutVal == 4 || this.yut.yutVal == 5) { // 윷이나 모가 나오면,
+                    this.throwYut++; // 기회 추가
+                }
+            }, 2000);
+
             return;
         }
 
         // 말 클릭시
+        for(let i = 0; i < this.players.length; i++) {
+            if(this.players[i].current) { // 현재 순서인 player
+                let horseSelectCheck = this.players[i].horse.filter(ele => { // 선택된 말이 있는지 없는지 filter
+                    return ele.select == true;
+                });
+                for(let v = 0; v < this.players[i].horse.length; v++) {
+                    if(this.players[i].horse[v].areaIn(x, y)) { // 말 좌표의 영역인지 확인
+
+                        // if(horseSelectCheck.length == 0) { // 선택한 말이 없으면 선택
+                        //     this.players[i].horse[v].isSelect();
+                        // } else {
+
+                        // }
+
+                    }
+                }
+            }
+        }
         // for(let i = 0; i < this.players.length; i++) {
         //     if(this.players[i].areaIn(x, y)) {
         //         this.players.horseMove();
@@ -177,12 +219,7 @@ class YutPlay {
         //             // 플레이어의 말을 선택했는지 확인하고, 글자 표시 해줄지 말지를 결정
         //             ele.selectCheck(this.horseSelectCheck, this.current);
         //         })
-
-                
-
         //     }
-
-
         // })
 
     }
