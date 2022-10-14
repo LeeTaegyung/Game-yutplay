@@ -45,7 +45,7 @@ class YutPlay {
         }
 
         window.requestAnimationFrame(this.animate.bind(this));
-        
+
     }
 
     resize() {
@@ -121,9 +121,9 @@ class YutPlay {
 
     }
 
-    currentCheck() {
+    checkCurrent() {
         for(let i = 0; i < this.players.length; i++) {
-            this.players[i].currentCheck(this.current);
+            this.players[i].checkCurrent(this.current);
         }
     }
 
@@ -161,7 +161,7 @@ class YutPlay {
             this.throwYut--; // 기회 차감
 
             setTimeout(() => { // 애니메이션이 끝나고 값을 받아와야해서 setTimeout 사용
-                this.currentCheck();
+                this.checkCurrent();
                 this.yutResult.push(this.yut.yutVal);
 
                 if(this.yut.yutVal == 4 || this.yut.yutVal == 5) { // 윷이나 모가 나오면,
@@ -175,52 +175,39 @@ class YutPlay {
         // 말 클릭시
         for(let i = 0; i < this.players.length; i++) {
             if(this.players[i].current) { // 현재 순서인 player
-                let horseSelectCheck = this.players[i].horse.filter(ele => { // 선택된 말이 있는지 없는지 filter
-                    return ele.select == true;
-                });
                 for(let v = 0; v < this.players[i].horse.length; v++) {
-                    if(this.players[i].horse[v].areaIn(x, y)) { // 말 좌표의 영역인지 확인
 
-                        // if(horseSelectCheck.length == 0) { // 선택한 말이 없으면 선택
-                        //     this.players[i].horse[v].isSelect();
-                        // } else {
+                    if(this.players[i].horse[v].areaIn(x, y)) {
 
-                        // }
+                        if(this.players[i].checkHorseSelect()) { // select true 한개이상이면
+                            if(this.players[i].horse[v].select) { // select 값이 현재 선택한 말이라면,
 
+                                this.players[i].horse[v].select = false; // select false
+
+                                // 선택한 말이 출발선에 있다면, 다시 대기석으로 돌리기
+                                if(this.players[i].horse[v].sX == this.stage.stageDotOut[0].x && this.players[i].horse[v].sY == this.stage.stageDotOut[0].y) {
+                                    this.players[i].horse[v].update(undefined, undefined);
+                                }
+
+                            }
+                        } else { // select true 없으면
+
+                            this.players[i].horse[v].select = true; // 선택한 말 select true
+
+                            // 선택한 말이 대기석에 있다면, 출발지점으로 이동
+                            if(this.players[i].horse[v].sX == undefined && this.players[i].horse[v].sY == undefined) {
+                                this.players[i].horse[v].update(this.stage.stageDotOut[0].x, this.stage.stageDotOut[0].y);
+                            }
+
+                        }
                     }
+
+                    this.players[i].updateHorseSelect(); //과정이 지나고 한번더 업데이트
+                    
+
                 }
             }
         }
-        // for(let i = 0; i < this.players.length; i++) {
-        //     if(this.players[i].areaIn(x, y)) {
-        //         this.players.horseMove();
-        //     }
-        // }
-        // this.horse.forEach(ele => {
-            
-        //     if(ele.areaIn(x, y)) { //말의 영역 안에서 클릭했는지 확인
-
-        //         if(this.horseSelectCheck) {
-        //             // 선택한 말이 있으면, 말을 놓기
-        //             ele.put();
-        //         } else {
-        //             // 선택한 말이 없으면, 말을 선택
-        //             ele.catch();
-        //             this.yutResultCoor = this.stage.findCoor(this.yutResult, ele);
-        //             // 윷던진 결과값이 담겨져 있는 변수를 참조해서,() 숫자에 해당되는 좌표값을 리턴받아서 변수에 넣어주고, 그릴지 말지에 대한 스위치변수를 설정해줘야함.
-        //         }
-
-        //         let horseSelectCheck = this.horse.filter(ele => { // 현재 플레이어에서 선택이 되었는지 확인.
-        //             return ele.player == this.current && ele.select == true;
-        //         });
-        //         this.horseSelectCheck = horseSelectCheck.length;
-
-        //         this.horse.forEach(ele => {
-        //             // 플레이어의 말을 선택했는지 확인하고, 글자 표시 해줄지 말지를 결정
-        //             ele.selectCheck(this.horseSelectCheck, this.current);
-        //         })
-        //     }
-        // })
 
     }
 

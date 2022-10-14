@@ -6,7 +6,7 @@ export class Horse {
         this.sY = undefined;
         this.bgColor = bgColor;
         this.size = size;
-        // this.active = false;
+        this.active = false;
         this.select = false;
         this.goal = false;
     }
@@ -25,14 +25,18 @@ export class Horse {
         
         ctx.fillStyle = '#fff';
 
-        // if(this.active) {
-        //     // ctx.fillText('click', x, y + txtH / 2);
-
-        //     if(this.select) {
-        //         ctx.fillText('select', x, y + txtH / 2);
-        //     }
+        if(this.active) { // 말 활성화
+            if(this.selectStatus) { // 말 하나라도 선택
+                if(this.select) {
+                    ctx.fillText('select', x, y + txtH / 2);
+                }
+            } else {
+                if(!this.select) {
+                    ctx.fillText('click', x, y + txtH / 2);
+                }
+            }
             
-        // }
+        }
 
         ctx.closePath();
         
@@ -53,24 +57,9 @@ export class Horse {
         }
     }
 
-    // isSelect() {
-    //     this.select = true;
-    // }
-
-    // catch() {
-    //     this.select = true;
-    //     if(this.sX == undefined && this.sY == undefined) {
-    //         this.update(this.stageStartX, this.stageStartY);
-    //     }
-    // }
-
-    // put() {
-    //     this.select = false;
-    //     if(this.sX == this.stageStartX && this.sY == this.stageStartY) {
-    //         this.update(undefined, undefined);
-    //     }
-
-    // }
+    checkHorseSelect(status) {
+        this.selectStatus = status;
+    }
 
     update(x, y) {
         this.sX = x;

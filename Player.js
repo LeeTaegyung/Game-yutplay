@@ -71,18 +71,38 @@ export class Player {
         
     }
 
-    currentCheck(current) {
+    checkCurrent(current) {
         if(this.name == current) {
             this.current = true;
-            // for(let i = 0; i < this.horse.length; i++) {
-            //     this.horse[i].active = true;
-            // }
+            for(let i = 0; i < this.horse.length; i++) {
+                this.horse[i].active = true;
+            }
 
         } else {
             this.current = false;
-            // for(let i = 0; i < this.horse.length; i++) {
-            //     this.horse[i].active = false;
-            // }
+            for(let i = 0; i < this.horse.length; i++) {
+                this.horse[i].active = false;
+            }
         }
     }
+
+    checkHorseSelect() {
+        let select = this.horse.filter(ele => {
+            return ele.select == true;
+        });
+
+        if(select.length) { // select true가 한개일때
+            return true;
+        } else { // select true가 없을때
+            return false;
+        }
+    }
+
+    updateHorseSelect() {
+        for(let i = 0; i < this.horse.length; i++) {
+            this.horse[i].checkHorseSelect(this.checkHorseSelect());
+        }
+    }
+
+
 }
