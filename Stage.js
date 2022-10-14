@@ -152,4 +152,24 @@ export class Stage {
 
     }
 
+    getCoor(yutResult, horse) {
+        // stageDotInToRight
+        // stageDotInToLeft
+
+        // 지름길의 좌표에서 시작하는지 확인을 해야함
+        // 비교를 해서 만약에 true라면, findIndex 되는 배열이 true가 된것으로 바뀌어야함.
+        //
+        
+        let horseNow = this.stageDotOut.findIndex(ele => {
+            return ele.x == horse.sX && ele.y == horse.sY;
+        })
+
+        // 선택된 horse를 기준으로 윷의 값을 map으로 this.denote에 결과값 받아서
+        // this.denote를 기준으로 스테이지에 그려주고 / 옮기는 작업까지 해야함.
+        this.denote = yutResult.map(ele => {
+            return this.stageDotOut[horseNow + ele]
+        })
+        
+    }
+
 }

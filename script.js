@@ -46,6 +46,8 @@ class YutPlay {
 
         window.requestAnimationFrame(this.animate.bind(this));
 
+        console.log(this.stage);
+
     }
 
     resize() {
@@ -177,7 +179,7 @@ class YutPlay {
             if(this.players[i].current) { // 현재 순서인 player
                 for(let v = 0; v < this.players[i].horse.length; v++) {
 
-                    if(this.players[i].horse[v].areaIn(x, y)) {
+                    if(this.players[i].horse[v].areaIn(x, y)) { // 말을 클릭했는지 판단
 
                         if(this.players[i].checkHorseSelect()) { // select true 한개이상이면
                             if(this.players[i].horse[v].select) { // select 값이 현재 선택한 말이라면,
@@ -189,7 +191,12 @@ class YutPlay {
                                     this.players[i].horse[v].update(undefined, undefined);
                                 }
 
+                                // 선택해제시 이동할수 있는 좌표 표시 지워야함
+                                // this.stage.getCoor(this.yutResult);
+
                             }
+
+
                         } else { // select true 없으면
 
                             this.players[i].horse[v].select = true; // 선택한 말 select true
@@ -199,12 +206,14 @@ class YutPlay {
                                 this.players[i].horse[v].update(this.stage.stageDotOut[0].x, this.stage.stageDotOut[0].y);
                             }
 
+                            // 선택시 이동할수 있는 좌표 표시 해줘야함
+                            console.log(this.stage.getCoor(this.yutResult, this.players[i].horse[v]));
+
                         }
                     }
 
                     this.players[i].updateHorseSelect(); //과정이 지나고 한번더 업데이트
                     
-
                 }
             }
         }
