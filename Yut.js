@@ -8,11 +8,6 @@ export class Yut {
         this.utilY = utilY;
         this.utilWidth = utilWidth;
         this.utilHeight = utilHeight;
-        // 윷 그리기
-        // 윷마다 앞인지 뒤인지 판단
-        // 윷던지기 버튼
-        // 윷던지기 애니메이션
-        // 윷던지기 결과
         this.init();
     }
 
@@ -137,7 +132,7 @@ export class Yut {
 
 
     play() {
-
+        
         this.isAction = true;
         this.fps = 0;
 

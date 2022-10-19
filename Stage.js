@@ -3,6 +3,8 @@ export class Stage {
         this.stageSize = stageSize;
         this.startX = startX;
         this.startY = startY;
+        this.selectHorseStatus = false;
+        this.denote = [];
 
         this.init();
     }
@@ -11,7 +13,6 @@ export class Stage {
 
         const circleSizeBig = Math.floor(this.stageSize * 0.05);
         const circleSizeSmall = Math.floor(this.stageSize * 0.035);
-
 
         // 라인값 저장
         this.line = {
@@ -36,9 +37,6 @@ export class Stage {
         }
 
         this.stageDot = []; // 그리기용 좌표값 저장
-        this.stageDotOut = []; // 찾기용 값 바깥라인 저장
-        this.stageDotInToRight = []; // 찾기용 오른쪽 상단부터 대각선 좌표값 저장
-        this.stageDotInToLeft = []; // 찾기용 왼쪽 상단부터 대각선 좌표값 저장
 
         let x, y;
         const outPer = this.stageSize / 5;
@@ -68,12 +66,7 @@ export class Stage {
                 }
 
                 this.stageDot.push({
-                    x: this.startX + x,
-                    y: this.startY + y,
-                    size: size
-                })
-
-                this.stageDotOut.push({
+                    idx: this.stageDot.length,
                     x: this.startX + x,
                     y: this.startY + y,
                     size: size
@@ -81,6 +74,14 @@ export class Stage {
 
             }
         }
+        
+        // 마지막 골인 좌표 저장
+        this.stageDot.push({
+            idx: this.stageDot.length,
+            x: this.startX + this.stageSize,
+            y: this.startY + this.stageSize,
+            size: circleSizeBig
+        })
 
         // 안쪽 라인 좌표 저장
         for(let i = 0; i < 2; i++) {
@@ -92,22 +93,13 @@ export class Stage {
                 if(i == 0) {
                     // 오른쪽 위부터 시작
                     x = this.stageSize - innerPer * v;
-                    this.stageDotInToRight.push({
-                        x: this.startX + x,
-                        y: this.startY + y,
-                        size: size
-                    })
                 } else if(i == 1) {
                     // 왼쪽 위부터 시작
                     x = 0 + innerPer * v;
-                    this.stageDotInToLeft.push({
-                        x: this.startX + x,
-                        y: this.startY + y,
-                        size: size
-                    })
                 }
 
                 this.stageDot.push({
+                    idx: this.stageDot.length,
                     x: this.startX + x,
                     y: this.startY + y,
                     size: size
@@ -115,12 +107,6 @@ export class Stage {
             }
         }
 
-        // 마지막 골인 좌표 저장
-        this.stageDot.push({
-            x: this.startX + this.stageSize,
-            y: this.startY + this.stageSize,
-            size: circleSizeBig
-        })
     }
 
     draw(ctx) {
@@ -153,23 +139,29 @@ export class Stage {
     }
 
     getCoor(yutResult, horse) {
-        // stageDotInToRight
-        // stageDotInToLeft
+        let horseNow;
+        this.denote = [];
 
-        // 지름길의 좌표에서 시작하는지 확인을 해야함
-        // 비교를 해서 만약에 true라면, findIndex 되는 배열이 true가 된것으로 바뀌어야함.
-        //
-        
-        let horseNow = this.stageDotOut.findIndex(ele => {
+        horseNow = this.stageDot.filter(ele => {
             return ele.x == horse.sX && ele.y == horse.sY;
         })
 
-        // 선택된 horse를 기준으로 윷의 값을 map으로 this.denote에 결과값 받아서
-        // this.denote를 기준으로 스테이지에 그려주고 / 옮기는 작업까지 해야함.
-        this.denote = yutResult.map(ele => {
-            return this.stageDotOut[horseNow + ele]
-        })
+        // 좌표값 중복 되는거 처리
+        if((horse.sIdx == this.stageDot[5].idx) || // 오른쪽 상단 점에 위치하면,
+            (horse.sIdx == this.stageDot[10].idx) || // 왼쪽 상단 점에 위치하면,
+            (horse.sIdx == this.stageDot[24].idx)) { // 중간 점에 위치하면,
+            horseNow = horseNow[1];
+        } else if(horse.sIdx == this.stageDot[27].idx) { // 왼쪽 하단 점에 위치하면,
+            horseNow = horseNow[0];
+        } else if(horse.sX == this.stageDot[0].x && horse.sY == this.stageDot[0].y) { // 시작 지점, 골인 지점 좌표라면
+            let startEndIdx = horseNow.findIndex(ele => {
+                return ele.idx == horse.sIdx;
+            })
+            horseNow = horseNow[startEndIdx];
+            // 현재 말의 좌표가 골인지점(sIdx !== 0)이라면, 골인 버튼도 생성해줘야함.
+        }
+
+        return this.stageDot[horseNow.idx + yutResult]
         
     }
-
 }

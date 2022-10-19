@@ -1,6 +1,7 @@
 import { Player } from "./Player.js";
 import { Stage } from "./Stage.js";
 import { Yut } from "./Yut.js";
+import { MovePoint } from "./MovePoint.js";
 
 class YutPlay {
     constructor(target, opt) {
@@ -16,6 +17,9 @@ class YutPlay {
         this.current = 'player1';
         this.yutResult = [];
         this.throwYut = 1;
+
+        this.movePoint = [];
+        this.moveShow = false;
 
         this.resize();
         window.addEventListener('resize', this.resize.bind(this), false);
@@ -46,7 +50,6 @@ class YutPlay {
 
         window.requestAnimationFrame(this.animate.bind(this));
 
-        console.log(this.stage);
 
     }
 
@@ -121,6 +124,12 @@ class YutPlay {
 
         this.yut.draw(this.ctx);
 
+        if(this.moveShow && this.movePoint.length > 0) {
+            for(let i = 0; i < this.movePoint.length; i++) {
+                this.movePoint[i].draw(this.ctx);
+            }
+        }
+
     }
 
     checkCurrent() {
@@ -142,12 +151,23 @@ class YutPlay {
 
         // 말 hover
         for(let i = 0; i < this.players.length; i++) {
-            for(let v = 0; v < this.players[i].horse.length; v++) {
-                if(this.players[i].horse[v].areaIn(x, y) && this.players[i].current) {
-                    this.canvas.style = 'cursor: pointer';
+            if(this.players[i].current) {
+                for(let v = 0; v < this.players[i].horse.length; v++) {
+                    if(this.players[i].horse[v].areaIn(x, y) && !this.throwYut) {
+                        this.canvas.style = 'cursor: pointer';
+                    }
                 }
             }
         }
+
+        // 무브 좌표값 표시
+        // if(this.stage.denote) {
+        //     for(let i = 0; i < this.stage.denote.length; i++) {
+        //         if(this.stage.areaIn(x, y, this.stage.denote[i])) {
+        //             this.canvas.style = 'cursor: pointer';
+        //         }
+        //     }
+        // }
 
     }
 
@@ -155,6 +175,7 @@ class YutPlay {
         
         let x = e.clientX - this.rect.left,
             y = e.clientY - this.rect.top;
+        const movePointSize = Math.floor(this.stageSize * 0.05);
 
         // 윷던지기 버튼 클릭시
         if(this.yut.areaIn(x, y) && this.throwYut == 1) {
@@ -163,12 +184,13 @@ class YutPlay {
             this.throwYut--; // 기회 차감
 
             setTimeout(() => { // 애니메이션이 끝나고 값을 받아와야해서 setTimeout 사용
-                this.checkCurrent();
-                this.yutResult.push(this.yut.yutVal);
-
                 if(this.yut.yutVal == 4 || this.yut.yutVal == 5) { // 윷이나 모가 나오면,
                     this.throwYut++; // 기회 추가
                 }
+
+                if(!this.throwYut) this.checkCurrent();
+                this.yutResult.push(this.yut.yutVal);
+
             }, 2000);
 
             return;
@@ -178,46 +200,29 @@ class YutPlay {
         for(let i = 0; i < this.players.length; i++) {
             if(this.players[i].current) { // 현재 순서인 player
                 for(let v = 0; v < this.players[i].horse.length; v++) {
+                    if(this.players[i].horse[v].areaIn(x, y) && !this.throwYut) { // 말을 클릭했는지 판단 && 윷던지 기회를 다 소진했는지
 
-                    if(this.players[i].horse[v].areaIn(x, y)) { // 말을 클릭했는지 판단
+                        this.players[i].horseState(v, this.stage);
 
-                        if(this.players[i].checkHorseSelect()) { // select true 한개이상이면
-                            if(this.players[i].horse[v].select) { // select 값이 현재 선택한 말이라면,
+                        this.moveShow = this.players[i].checkHorseSelect(); // 옮실수 있는 좌표의 표시 결정
 
-                                this.players[i].horse[v].select = false; // select false
-
-                                // 선택한 말이 출발선에 있다면, 다시 대기석으로 돌리기
-                                if(this.players[i].horse[v].sX == this.stage.stageDotOut[0].x && this.players[i].horse[v].sY == this.stage.stageDotOut[0].y) {
-                                    this.players[i].horse[v].update(undefined, undefined);
-                                }
-
-                                // 선택해제시 이동할수 있는 좌표 표시 지워야함
-                                // this.stage.getCoor(this.yutResult);
-
+                        // 선택한 말이 있고, 클릭한 그 말이 선택한 말일때, 옮길수 있는 위치 표시
+                        if(this.players[i].checkHorseSelect() && this.players[i].horse[v].select) {
+                            for(let d = 0; d < this.yutResult.length; d++) {
+                                this.movePoint[d] = new MovePoint(movePointSize, this.stage.getCoor(this.yutResult[d], this.players[i].horse[v]));
                             }
-
-
-                        } else { // select true 없으면
-
-                            this.players[i].horse[v].select = true; // 선택한 말 select true
-
-                            // 선택한 말이 대기석에 있다면, 출발지점으로 이동
-                            if(this.players[i].horse[v].sX == undefined && this.players[i].horse[v].sY == undefined) {
-                                this.players[i].horse[v].update(this.stage.stageDotOut[0].x, this.stage.stageDotOut[0].y);
-                            }
-
-                            // 선택시 이동할수 있는 좌표 표시 해줘야함
-                            console.log(this.stage.getCoor(this.yutResult, this.players[i].horse[v]));
 
                         }
+                        
                     }
 
-                    this.players[i].updateHorseSelect(); //과정이 지나고 한번더 업데이트
-                    
                 }
             }
         }
+        
 
+
+        
     }
 
 }

@@ -72,17 +72,13 @@ export class Player {
     }
 
     checkCurrent(current) {
-        if(this.name == current) {
-            this.current = true;
-            for(let i = 0; i < this.horse.length; i++) {
-                this.horse[i].active = true;
-            }
+        let state;
+        if(this.name == current) state = true;
+        else state = false;
 
-        } else {
-            this.current = false;
-            for(let i = 0; i < this.horse.length; i++) {
-                this.horse[i].active = false;
-            }
+        this.current = state;
+        for(let i = 0; i < this.horse.length; i++) {
+            this.horse[i].active = state;
         }
     }
 
@@ -91,16 +87,35 @@ export class Player {
             return ele.select == true;
         });
 
-        if(select.length) { // select true가 한개일때
-            return true;
-        } else { // select true가 없을때
-            return false;
+        return select.length ? true : false;
+    }
+
+    horseState(horseIdx, stage) {
+
+        if(this.checkHorseSelect()) { // 선택한 말이 있다면,
+            if(this.horse[horseIdx].select) { // 현재 선택한 말이 true라면,
+                this.horse[horseIdx].select = false; // select false
+                //선택한 말이 출발지점에 있다면, 다시 대기석으로 돌리기
+                if(this.horse[horseIdx].sIdx == 0) {
+                    this.horse[horseIdx].update(undefined, undefined, undefined);
+                }
+            }
+        } else { // 선택한 말이 없다면,
+            this.horse[horseIdx].select = true; // select false라면
+            //선택한 말이 대기석에 있다면, 출발지점으로 이동
+            if(this.horse[horseIdx].sIdx == undefined) {
+                this.horse[horseIdx].update(stage.stageDot[0].idx, stage.stageDot[0].x, stage.stageDot[0].y);
+            }
         }
+
+        this.updateHorseSelect();
+
     }
 
     updateHorseSelect() {
+        // 말에 click / select 표시를 위해 상태값 update
         for(let i = 0; i < this.horse.length; i++) {
-            this.horse[i].checkHorseSelect(this.checkHorseSelect());
+            this.horse[i].horseStatus(this.checkHorseSelect());
         }
     }
 
