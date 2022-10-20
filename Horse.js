@@ -9,12 +9,13 @@ export class Horse {
         this.active = false;
         this.select = false;
         this.goal = false;
+        this.endVal = undefined;
     }
 
     draw(ctx) {
 
-        if(this.arrival && this.select) {
-            this.sIdx = this.arrival.idx;
+        if(this.endVal) {
+            this.sIdx = this.endVal.idx;
             this.move();
         }
 
@@ -39,7 +40,6 @@ export class Horse {
             } else {
                 if(!this.select) {
                     ctx.fillText('click', x, y + txtH / 2);
-                    this.arrival = undefined;
                 }
             }
             
@@ -74,30 +74,35 @@ export class Horse {
         this.sY = y;
     }
 
-    updateArrival(arrival) {
-        this.arrival = arrival;
+    updateEndVal(endVal) {
+        this.endVal = endVal;
     }
 
     move() {
-    
-        if(!(this.arrival.x == this.sX)) {
-
-            if(this.arrival.x > this.sX) {
+        // this.endVal
+        if(!(this.endVal.x == this.sX)) {
+            if((this.endVal.x - this.sX) > 0) {
                 this.sX += 1;
-            } else {
+            } else if((this.endVal.x - this.sX) < 0) {
                 this.sX -= 1;
             }
             
-        } else if(!(this.arrival.y == this.sY)) {
+        }
 
-            if(this.arrival.y > this.sY) {
+        if(!(this.endVal.y == this.sY)) {
+            if((this.endVal.y - this.sY) > 0) {
                 this.sY += 1;
-            } else {
+            } else if((this.endVal.y - this.sY) < 0) {
                 this.sY -= 1;
             }
-        } else {
-            // this.select = false;
         }
+
+        // 목적지에 도착하면,
+        if((this.endVal.x == this.sX) && (this.endVal.y == this.sY)) {
+            this.select = false;
+            this.endVal = undefined;
+        }
+        
     }
 
     

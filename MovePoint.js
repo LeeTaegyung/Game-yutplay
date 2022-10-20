@@ -3,6 +3,7 @@ export class MovePoint {
         this.denoteSize = denoteSize;
         this.x = moveCoor.x;
         this.y = moveCoor.y;
+        this.idx = moveCoor.idx;
     }
     draw(ctx) {
         ctx.fillStyle = '#00ffff';
@@ -15,8 +16,7 @@ export class MovePoint {
         if(this.x - this.denoteSize <= x && 
             this.y - this.denoteSize <= y && 
             this.x + this.denoteSize >= x && 
-            this.y + this.denoteSize >= y && 
-            this.selectHorseStatus
+            this.y + this.denoteSize >= y 
         ) {
             return true;
         } else {

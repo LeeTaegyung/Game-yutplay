@@ -142,6 +142,7 @@ export class Stage {
         let horseNow;
         this.denote = [];
 
+        // horseNow에 동일한 값을 전부 받아야함.
         horseNow = this.stageDot.filter(ele => {
             return ele.x == horse.sX && ele.y == horse.sY;
         })
@@ -159,6 +160,8 @@ export class Stage {
             })
             horseNow = horseNow[startEndIdx];
             // 현재 말의 좌표가 골인지점(sIdx !== 0)이라면, 골인 버튼도 생성해줘야함.
+        } else {
+            horseNow = horseNow[0];
         }
 
         return this.stageDot[horseNow.idx + yutResult]

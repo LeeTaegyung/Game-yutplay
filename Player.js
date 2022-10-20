@@ -91,7 +91,6 @@ export class Player {
     }
 
     horseState(horseIdx, stage) {
-
         if(this.checkHorseSelect()) { // 선택한 말이 있다면,
             if(this.horse[horseIdx].select) { // 현재 선택한 말이 true라면,
                 this.horse[horseIdx].select = false; // select false

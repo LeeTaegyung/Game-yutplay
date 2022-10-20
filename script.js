@@ -124,7 +124,7 @@ class YutPlay {
 
         this.yut.draw(this.ctx);
 
-        if(this.moveShow && this.movePoint.length > 0) {
+        if(this.movePoint.length > 0 && this.moveShow) { // movePoint에 값이 있을때,
             for(let i = 0; i < this.movePoint.length; i++) {
                 this.movePoint[i].draw(this.ctx);
             }
@@ -160,14 +160,14 @@ class YutPlay {
             }
         }
 
-        // 무브 좌표값 표시
-        // if(this.stage.denote) {
-        //     for(let i = 0; i < this.stage.denote.length; i++) {
-        //         if(this.stage.areaIn(x, y, this.stage.denote[i])) {
-        //             this.canvas.style = 'cursor: pointer';
-        //         }
-        //     }
-        // }
+        
+        if(this.movePoint.length > 0) {
+            for(let i = 0; i < this.movePoint.length; i++) {
+                if(this.movePoint[i].areaIn(x,y)) {
+                    this.canvas.style = 'cursor: pointer';
+                }
+            }
+        }
 
     }
 
@@ -202,24 +202,43 @@ class YutPlay {
                 for(let v = 0; v < this.players[i].horse.length; v++) {
                     if(this.players[i].horse[v].areaIn(x, y) && !this.throwYut) { // 말을 클릭했는지 판단 && 윷던지 기회를 다 소진했는지
 
+                        // 말의 상태값 체크 및 말 좌표값 업데이트
                         this.players[i].horseState(v, this.stage);
 
-                        this.moveShow = this.players[i].checkHorseSelect(); // 옮실수 있는 좌표의 표시 결정
+                        this.moveShow = this.players[i].checkHorseSelect(); // 선택한 말이 있는지 없는지 확인
 
-                        // 선택한 말이 있고, 클릭한 그 말이 선택한 말일때, 옮길수 있는 위치 표시
-                        if(this.players[i].checkHorseSelect() && this.players[i].horse[v].select) {
-                            for(let d = 0; d < this.yutResult.length; d++) {
-                                this.movePoint[d] = new MovePoint(movePointSize, this.stage.getCoor(this.yutResult[d], this.players[i].horse[v]));
+                        if(this.players[i].checkHorseSelect()) {
+                            // 선택한 말이 있고, 클릭한 그 말이 선택한 말일때, 옮길수 있는 위치 표시
+                            if(this.players[i].horse[v].select) {
+                                for(let d = 0; d < this.yutResult.length; d++) {
+
+                                    this.movePoint[d] = new MovePoint(movePointSize, this.stage.getCoor(this.yutResult[d], this.players[i].horse[v]));
+                                }
                             }
-
+                        } else {
+                            // 선택한 말이 없을때 movePoint 비움
+                            this.movePoint = [];
                         }
-                        
                     }
-
                 }
             }
         }
-        
+
+        // 무브 좌표 클릭시
+        if(this.movePoint.length > 0 && this.moveShow) {
+            let player = this.players.find(ele => ele.current == true);
+            let horse = player.horse.find(ele => ele.select == true);
+            let horseIdx = player.horse.findIndex(ele => ele.select == true);
+            for(let i = 0; i < this.movePoint.length; i++) {
+                if(this.movePoint[i].areaIn(x,y)) {
+
+                    horse.updateEndVal(this.movePoint[i]); // 말에 선택한 무브좌표값 전달
+
+                    this.yutResult.splice(i, 1); // 윷의 결과 해당하는 부분 삭제
+                    this.movePoint = []; // 무브좌표 초기화
+                }
+            }
+        }
 
 
         
