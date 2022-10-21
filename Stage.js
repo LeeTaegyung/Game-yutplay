@@ -138,7 +138,7 @@ export class Stage {
     }
 
     getCoor(yutResult, horse) {
-        let horseNow, horseNextStart;
+        let horseNow, horseIdxStart, horseIdxEnd;
         let denote = [];
 
         // horseNow에 동일한 값을 전부 받아야함.
@@ -163,10 +163,21 @@ export class Stage {
             horseNow = horseNow[0];
         }
 
-        horseNextStart = horseNow.idx + 1;
-
-        for(let i = horseNextStart; i < horseNextStart + yutResult; i++) {
-            denote.push(this.stageDot[i]);
+        // 지나갈 경로 찾아주기 변수 지정
+        horseIdxStart = horseNow.idx + 1;
+        horseIdxEnd = horseIdxStart + yutResult;
+        // 지나갈 경로 좌표 담기 위한 반복문
+        while (horseIdxStart < horseIdxEnd) {
+            if(this.stageDot[horseIdxStart].idx == 27) { // 대각선을 타고 왼쪽 하단 점을 지나가는 루트라면,
+                horseIdxStart = 15;
+                horseIdxEnd = horseIdxStart + (yutResult - denote.length);
+            } else if(this.stageDot[horseIdxStart].idx == 20 || this.stageDot[horseIdxStart].idx == 34) { // 골인지점을 지나가는 루트라면,
+                denote.push(this.stageDot[horseIdxStart]);
+                // 여기도 골인 좌표 그려줘야함.
+                break;
+            }
+            denote.push(this.stageDot[horseIdxStart]);
+            horseIdxStart++;
         }
         return denote;
         

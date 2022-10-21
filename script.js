@@ -19,7 +19,6 @@ class YutPlay {
         this.throwYut = 1;
 
         this.movePoint = [];
-        this.moveShow = false;
 
         this.resize();
         window.addEventListener('resize', this.resize.bind(this), false);
@@ -124,12 +123,20 @@ class YutPlay {
 
         this.yut.draw(this.ctx);
 
-        if(this.movePoint.length > 0 && this.moveShow) { // movePoint에 값이 있을때,
+        if(this.movePoint.length > 0) { // movePoint에 값이 있을때,
             for(let i = 0; i < this.movePoint.length; i++) {
                 this.movePoint[i].draw(this.ctx);
             }
         }
 
+    }
+
+    changeCurrent() {
+        if(this.current == 'player1') {
+            this.current = 'player2';
+        } else {
+            this.current = 'player1';
+        }
     }
 
     checkCurrent() {
@@ -202,16 +209,17 @@ class YutPlay {
                 for(let v = 0; v < this.players[i].horse.length; v++) {
                     if(this.players[i].horse[v].areaIn(x, y) && !this.throwYut) { // 말을 클릭했는지 판단 && 윷던지 기회를 다 소진했는지
 
+                        // 이제 여기에 말을 업은 상태인지 아닌지 판별도 해야함.
+
+
                         // 말의 상태값 체크 및 말 좌표값 업데이트
                         this.players[i].horseState(v, this.stage);
 
-                        this.moveShow = this.players[i].checkHorseSelect(); // 선택한 말이 있는지 없는지 확인
-
                         if(this.players[i].checkHorseSelect()) {
-                            // 선택한 말이 있고, 클릭한 그 말이 선택한 말일때, 옮길수 있는 위치 표시
+                            // 선택한 말이 있고, 클릭한 그 말이 선택한 말일때,
                             if(this.players[i].horse[v].select) {
+                                // 옮길수 있는 위치 표시
                                 for(let d = 0; d < this.yutResult.length; d++) {
-
                                     this.movePoint[d] = new MovePoint(movePointSize, this.stage.getCoor(this.yutResult[d], this.players[i].horse[v]));
                                 }
                             }
@@ -225,19 +233,37 @@ class YutPlay {
         }
 
         // 무브 좌표 클릭시
-        if(this.movePoint.length > 0 && this.moveShow) {
+        if(this.movePoint.length > 0) {
             let player = this.players.find(ele => ele.current == true);
             let horse = player.horse.find(ele => ele.select == true);
             for(let i = 0; i < this.movePoint.length; i++) {
                 if(this.movePoint[i].areaIn(x,y)) {
 
+                    // 여기에 상대말을 잡았는지 안잡았는지 검사가 필요함.
+
                     horse.updateDeonte(this.movePoint[i]); // 말에 선택한 무브좌표값 전달
 
                     this.yutResult.splice(i, 1); // 윷의 결과 해당하는 부분 삭제
                     this.movePoint = []; // 무브좌표 초기화
+
+                    if(this.yutResult.length == 0) {
+                        this.changeCurrent(); // 선수교체
+                        this.throwYut++; // 횟수추가
+
+                        // 말 상태값 다시 체크
+                        for(let d = 0; d < this.players.length; d++) { 
+                            this.players[d].updateHorseSelect();
+                        }
+                    }
                 }
             }
         }
+
+        // 골인 버튼도 만들어줘야함.
+        // 골인버튼 클릭하면 도착지점까지 움직이고 -> 말 골인 시키고 goal true -> 골인버튼 없애줘야함.
+        // 말이 움직이는 중에도, 윷은 던질 수 있음(근데 이렇게 되면, 말을 잡았을때 기회 추가가 좀 애매함.)
+        // 남의 말을 잡았을때 -> 기회 한번 추가, 다음턴으로 넘기지 않기. 윷던지기 활성화
+        // 그리고 가끔 좌표가 이상하게 나옴..
 
 
         
