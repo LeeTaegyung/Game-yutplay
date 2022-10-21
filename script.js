@@ -228,11 +228,10 @@ class YutPlay {
         if(this.movePoint.length > 0 && this.moveShow) {
             let player = this.players.find(ele => ele.current == true);
             let horse = player.horse.find(ele => ele.select == true);
-            let horseIdx = player.horse.findIndex(ele => ele.select == true);
             for(let i = 0; i < this.movePoint.length; i++) {
                 if(this.movePoint[i].areaIn(x,y)) {
 
-                    horse.updateEndVal(this.movePoint[i]); // 말에 선택한 무브좌표값 전달
+                    horse.updateDeonte(this.movePoint[i]); // 말에 선택한 무브좌표값 전달
 
                     this.yutResult.splice(i, 1); // 윷의 결과 해당하는 부분 삭제
                     this.movePoint = []; // 무브좌표 초기화

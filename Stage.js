@@ -4,7 +4,6 @@ export class Stage {
         this.startX = startX;
         this.startY = startY;
         this.selectHorseStatus = false;
-        this.denote = [];
 
         this.init();
     }
@@ -139,8 +138,8 @@ export class Stage {
     }
 
     getCoor(yutResult, horse) {
-        let horseNow;
-        this.denote = [];
+        let horseNow, horseNextStart;
+        let denote = [];
 
         // horseNow에 동일한 값을 전부 받아야함.
         horseNow = this.stageDot.filter(ele => {
@@ -164,7 +163,12 @@ export class Stage {
             horseNow = horseNow[0];
         }
 
-        return this.stageDot[horseNow.idx + yutResult]
+        horseNextStart = horseNow.idx + 1;
+
+        for(let i = horseNextStart; i < horseNextStart + yutResult; i++) {
+            denote.push(this.stageDot[i]);
+        }
+        return denote;
         
     }
 }
