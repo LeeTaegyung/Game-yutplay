@@ -190,7 +190,7 @@ class YutPlay {
 
             this.throwYut--; // 기회 차감
 
-            setTimeout(() => { // 애니메이션이 끝나고 값을 받아와야해서 setTimeout 사용
+            setTimeout(() => { // 애니메이션이 끝나고 값을 받아와야해서 setTimeout 사용...
                 if(this.yut.yutVal == 4 || this.yut.yutVal == 5) { // 윷이나 모가 나오면,
                     this.throwYut++; // 기회 추가
                 }
@@ -236,25 +236,39 @@ class YutPlay {
         if(this.movePoint.length > 0) {
             let player = this.players.find(ele => ele.current == true);
             let horse = player.horse.find(ele => ele.select == true);
-            for(let i = 0; i < this.movePoint.length; i++) {
-                if(this.movePoint[i].areaIn(x,y)) {
+            for(let s = 0; s < this.movePoint.length; s++) {
+                if(this.movePoint[s].areaIn(x,y)) {
 
-                    // 여기에 상대말을 잡았는지 안잡았는지 검사가 필요함.
+                    // 여기에 상대말을 잡았는지 안잡았는지 검사
+                    let otherPlayer = this.players.find(ele => ele.current == false);
+                    let otherHorse = otherPlayer.horse.filter(ele => ele.sX == this.movePoint[s].x && ele.sY == this.movePoint[s].y);
+                    if(otherHorse.length >= 1) {
+                        for(let o = 0; o < otherHorse.length; o++) {
+                            otherHorse[o].update(undefined, undefined, undefined);
+                        }
+                        this.throwYut++;
+                        console.log('상대편 말을 잡았습니다.');
+                    }
 
-                    horse.updateDeonte(this.movePoint[i]); // 말에 선택한 무브좌표값 전달
+                    horse.updateDeonte(this.movePoint[s]); // 말에 선택한 무브좌표값 전달
 
-                    this.yutResult.splice(i, 1); // 윷의 결과 해당하는 부분 삭제
+                    this.yutResult.splice(s, 1); // 윷의 결과 해당하는 부분 삭제
                     this.movePoint = []; // 무브좌표 초기화
 
-                    if(this.yutResult.length == 0) {
+                    // 현재 플레이어가 모든 기회를 소진했을때,
+                    if(this.yutResult.length == 0 && !this.throwYut) {
                         this.changeCurrent(); // 선수교체
                         this.throwYut++; // 횟수추가
-
-                        // 말 상태값 다시 체크
+                        
+                        // 말 상태값 다시 체크(click 텍스트를 다시 표시해주기 위한 --> 이게 잘 안되는듯..)
+                        // 움직임이 끝나고 select를 false로 바꿔주는거라, 제대로 반영이 안되는듯?....
+                        // 움직임이 끝난후 모든 동작을 할수있게 수정해야할듯.... 어케하지..
                         for(let d = 0; d < this.players.length; d++) { 
                             this.players[d].updateHorseSelect();
                         }
                     }
+
+
                 }
             }
         }

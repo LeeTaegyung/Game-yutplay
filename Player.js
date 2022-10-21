@@ -87,6 +87,8 @@ export class Player {
             return ele.select == true;
         });
 
+        console.log(select);
+
         return select.length ? true : false;
     }
 
@@ -113,6 +115,7 @@ export class Player {
 
     updateHorseSelect() {
         // 말에 click / select 표시를 위해 상태값 update
+        console.log(this.name + ' : ' + this.checkHorseSelect());
         for(let i = 0; i < this.horse.length; i++) {
             this.horse[i].horseStatus(this.checkHorseSelect());
         }

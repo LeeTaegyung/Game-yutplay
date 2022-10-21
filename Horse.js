@@ -46,7 +46,6 @@ export class Horse {
         }
 
         ctx.closePath();
-        
     }
 
     areaIn(x, y) {
@@ -125,6 +124,5 @@ export class Horse {
         }
         
     }
-
     
 }
