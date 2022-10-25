@@ -186,33 +186,32 @@ class YutPlay {
 
         // 윷던지기 버튼 클릭시
         if(this.yut.areaIn(x, y) && this.throwYut == 1) {
-            this.yut.play();
-
+            
             this.throwYut--; // 기회 차감
+            
+            this.yut.play().then((val) => { // 애니메이션이 끝나고 값이 결정되면, 결과값 추가 및 현재 플레이어 확인,
 
-            setTimeout(() => { // 애니메이션이 끝나고 값을 받아와야해서 setTimeout 사용...
-                if(this.yut.yutVal == 4 || this.yut.yutVal == 5) { // 윷이나 모가 나오면,
+                if(val == 4 || val == 5) { // 윷이나 모가 나오면,
                     this.throwYut++; // 기회 추가
                 }
 
                 if(!this.throwYut) this.checkCurrent();
-                this.yutResult.push(this.yut.yutVal);
+                this.yutResult.push(val);
+            });
 
-            }, 2000);
-
-            return;
         }
 
         // 말 클릭시
         for(let i = 0; i < this.players.length; i++) {
             if(this.players[i].current) { // 현재 순서인 player
                 for(let v = 0; v < this.players[i].horse.length; v++) {
-                    if(this.players[i].horse[v].areaIn(x, y) && !this.throwYut) { // 말을 클릭했는지 판단 && 윷던지 기회를 다 소진했는지
+                    if(this.players[i].horse[v].areaIn(x, y) && !this.throwYut) { // 말을 클릭했는지 판단 && 윷던지기 기회를 다 소진했는지
 
                         // 이제 여기에 말을 업은 상태인지 아닌지 판별도 해야함.
 
 
                         // 말의 상태값 체크 및 말 좌표값 업데이트
+                        // ---------------------------------------------------여기 부분 수정해야할듯?.... 아직 옮길수 있는 횟수가 남아 있으면 click 텍스트 보여줘야함
                         this.players[i].horseState(v, this.stage);
 
                         if(this.players[i].checkHorseSelect()) {
@@ -263,8 +262,8 @@ class YutPlay {
                         // 말 상태값 다시 체크(click 텍스트를 다시 표시해주기 위한 --> 이게 잘 안되는듯..)
                         // 움직임이 끝나고 select를 false로 바꿔주는거라, 제대로 반영이 안되는듯?....
                         // 움직임이 끝난후 모든 동작을 할수있게 수정해야할듯.... 어케하지..
-                        for(let d = 0; d < this.players.length; d++) { 
-                            this.players[d].updateHorseSelect();
+                        for(let p = 0; p < this.players.length; p++) { 
+                            this.players[p].updateHorseSelect();
                         }
                     }
 

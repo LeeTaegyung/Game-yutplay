@@ -2,7 +2,6 @@ export class Yut {
     constructor(canvasWidth, canvasHeight, utilX, utilY, utilWidth, utilHeight) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
-        this.fps = 0;
         this.isAction = false;
         this.utilX = utilX;
         this.utilY = utilY;
@@ -130,29 +129,33 @@ export class Yut {
 
     }
 
-
     play() {
+        let fps = 0;
+        let ani;
         
         this.isAction = true;
-        this.fps = 0;
 
-        this.ani = window.requestAnimationFrame(this.animate.bind(this));
+        return new Promise(resolve => {
+            ani = window.requestAnimationFrame(yutAni.bind(this));
 
-    }
-
-    animate() {
-        if(this.fps % 5 == 0 && this.fps < 100) {
-            this.suffle(this.random());
-        }
-
-        this.fps++;
-
-        this.ani = window.requestAnimationFrame(this.animate.bind(this));
+            function yutAni() {
+                if(fps % 5 == 0 && fps < 100) {
+                    this.suffle(this.random());
+                }
+                
+                fps++;
         
-        if(this.fps >= 120) {
-            this.isAction = false;
-            window.cancelAnimationFrame(this.ani);
-        }
+                ani = window.requestAnimationFrame(yutAni.bind(this));
+        
+                if(fps >= 120) {
+                    this.isAction = false;
+                    window.cancelAnimationFrame(ani);
+                    resolve(this.yutVal);
+                }
+            }
+
+        });
+
     }
 
 
@@ -229,8 +232,6 @@ export class Yut {
             return false;
         }
     }
-
-    
 
 
 }
