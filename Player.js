@@ -72,11 +72,11 @@ export class Player {
     }
 
     checkCurrent(current) {
-        let state;
-        if(this.name == current) state = true;
-        else state = false;
+        this.current = (this.name == current);
+        this.checkHorseActive(this.current);
+    }
 
-        this.current = state;
+    checkHorseActive(state) {
         for(let i = 0; i < this.horse.length; i++) {
             this.horse[i].active = state;
         }
@@ -86,8 +86,6 @@ export class Player {
         let select = this.horse.filter(ele => {
             return ele.select == true;
         });
-
-        console.log(select);
 
         return select.length ? true : false;
     }
@@ -115,7 +113,6 @@ export class Player {
 
     updateHorseSelect() {
         // 말에 click / select 표시를 위해 상태값 update
-        console.log(this.name + ' : ' + this.checkHorseSelect());
         for(let i = 0; i < this.horse.length; i++) {
             this.horse[i].horseStatus(this.checkHorseSelect());
         }

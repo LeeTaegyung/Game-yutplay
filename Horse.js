@@ -14,11 +14,6 @@ export class Horse {
 
     draw(ctx) {
 
-        if(this.denote) {
-            this.sIdx = this.denote.idx;
-            this.move();
-        }
-
         let x = this.sX != undefined ? this.sX : this.wX;
         let y = this.sY != undefined ? this.sY : this.wY;
 
@@ -38,7 +33,7 @@ export class Horse {
                     ctx.fillText('select', x, y + txtH / 2);
                 }
             } else {
-                if(!this.select) {
+                if(!this.select) { // select 된 말이 없으면,
                     ctx.fillText('click', x, y + txtH / 2);
                 }
             }
@@ -73,56 +68,67 @@ export class Horse {
         this.sY = y;
     }
 
-    updateDeonte(denote) {
-        this.denote = denote;
+    move(denote) {
+        let ani;
+        this.denote = denote; // 목적지
         this.denoteIdx = 0;
-    }
+        this.sIdx = this.denote.idx;
 
-    move() {
-        let nowRoute = this.denote.route[this.denoteIdx];
-        let speed = 3;
+        return new Promise(resolve => {
+            ani = window.requestAnimationFrame(moveCalc.bind(this));
 
-        if(!(this.denote.x == this.sX) || !(this.denote.y == this.sY)) {
-            // 최종 목적지에 도착하지 않았으면
-
-            if(!(nowRoute.x == this.sX)) {
-                if((nowRoute.x - this.sX) > 0) {
-                    this.sX += speed;
-                    if(nowRoute.x <= this.sX) {
-                        this.sX = nowRoute.x;
-                    }
-                } else if((nowRoute.x - this.sX) < 0) {
-                    this.sX -= speed;
-                    if(nowRoute.x >= this.sX) {
-                        this.sX = nowRoute.x;
-                    }
-                }
-            }
-
-            if(!(nowRoute.y == this.sY)) {
-                if((nowRoute.y - this.sY) > 0) {
-                    this.sY += speed;
-                    if(nowRoute.y <= this.sY) {
-                        this.sY = nowRoute.y;
-                    }
-                } else if((nowRoute.y - this.sY) < 0) {
-                    this.sY -= speed;
-                    if(nowRoute.y >= this.sY) {
-                        this.sY = nowRoute.y;
-                    }
-                }
-            }
-
-            if((nowRoute.x == this.sX) && (nowRoute.y == this.sY)) {
-                this.denoteIdx++;
-            }
-
-        } else {
-            // 최종 목적지에 도착하면,
-            this.select = false;
-            this.denote = undefined;
-        }
+            function moveCalc() {
+                let nowRoute = this.denote.route[this.denoteIdx];
+                let speed = 3;
+                
+                ani = window.requestAnimationFrame(moveCalc.bind(this));
+                
+                if(!(this.denote.x == this.sX) || !(this.denote.y == this.sY)) {
+                    // 최종 목적지에 도착하지 않았으면
         
+                    if(!(nowRoute.x == this.sX)) {
+                        if((nowRoute.x - this.sX) > 0) {
+                            this.sX += speed;
+                            if(nowRoute.x <= this.sX) {
+                                this.sX = nowRoute.x;
+                            }
+                        } else if((nowRoute.x - this.sX) < 0) {
+                            this.sX -= speed;
+                            if(nowRoute.x >= this.sX) {
+                                this.sX = nowRoute.x;
+                            }
+                        }
+                    }
+        
+                    if(!(nowRoute.y == this.sY)) {
+                        if((nowRoute.y - this.sY) > 0) {
+                            this.sY += speed;
+                            if(nowRoute.y <= this.sY) {
+                                this.sY = nowRoute.y;
+                            }
+                        } else if((nowRoute.y - this.sY) < 0) {
+                            this.sY -= speed;
+                            if(nowRoute.y >= this.sY) {
+                                this.sY = nowRoute.y;
+                            }
+                        }
+                    }
+        
+                    if((nowRoute.x == this.sX) && (nowRoute.y == this.sY)) {
+                        this.denoteIdx++;
+                    }
+        
+                } else {
+                    // 최종 목적지에 도착하면,
+                    this.select = false;
+                    this.denote = undefined;
+                    window.cancelAnimationFrame(ani);
+                    resolve();
+                }
+            }
+
+        })
     }
+
     
 }

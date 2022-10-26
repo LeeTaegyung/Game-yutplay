@@ -211,7 +211,6 @@ class YutPlay {
 
 
                         // 말의 상태값 체크 및 말 좌표값 업데이트
-                        // ---------------------------------------------------여기 부분 수정해야할듯?.... 아직 옮길수 있는 횟수가 남아 있으면 click 텍스트 보여줘야함
                         this.players[i].horseState(v, this.stage);
 
                         if(this.players[i].checkHorseSelect()) {
@@ -236,50 +235,51 @@ class YutPlay {
             let player = this.players.find(ele => ele.current == true);
             let horse = player.horse.find(ele => ele.select == true);
             for(let s = 0; s < this.movePoint.length; s++) {
-                if(this.movePoint[s].areaIn(x,y)) {
-
-                    // 여기에 상대말을 잡았는지 안잡았는지 검사
-                    let otherPlayer = this.players.find(ele => ele.current == false);
-                    let otherHorse = otherPlayer.horse.filter(ele => ele.sX == this.movePoint[s].x && ele.sY == this.movePoint[s].y);
-                    if(otherHorse.length >= 1) {
-                        for(let o = 0; o < otherHorse.length; o++) {
-                            otherHorse[o].update(undefined, undefined, undefined);
-                        }
-                        this.throwYut++;
-                        console.log('상대편 말을 잡았습니다.');
-                    }
-
-                    horse.updateDeonte(this.movePoint[s]); // 말에 선택한 무브좌표값 전달
+                if(this.movePoint[s].areaIn(x,y)) { // 무브좌표 영역 안이면,
+                    let movePoint = this.movePoint[s];
 
                     this.yutResult.splice(s, 1); // 윷의 결과 해당하는 부분 삭제
                     this.movePoint = []; // 무브좌표 초기화
+                    
+                    horse.move(movePoint).then(() => { // 이동이 완료되면,
 
-                    // 현재 플레이어가 모든 기회를 소진했을때,
-                    if(this.yutResult.length == 0 && !this.throwYut) {
-                        this.changeCurrent(); // 선수교체
-                        this.throwYut++; // 횟수추가
-                        
-                        // 말 상태값 다시 체크(click 텍스트를 다시 표시해주기 위한 --> 이게 잘 안되는듯..)
-                        // 움직임이 끝나고 select를 false로 바꿔주는거라, 제대로 반영이 안되는듯?....
-                        // 움직임이 끝난후 모든 동작을 할수있게 수정해야할듯.... 어케하지..
-                        for(let p = 0; p < this.players.length; p++) { 
-                            this.players[p].updateHorseSelect();
+                        // 상대말을 잡았는지 안잡았는지 검사
+                        let otherPlayer = this.players.find(ele => ele.current == false);
+                        let otherHorse = otherPlayer.horse.filter(ele => ele.sX == movePoint.x && ele.sY == movePoint.y);
+                        if(otherHorse.length >= 1) {
+                            for(let o = 0; o < otherHorse.length; o++) {
+                                otherHorse[o].update(undefined, undefined, undefined);
+                            }
+                            this.throwYut++;
+                            console.log('상대편 말을 잡았습니다.');
                         }
-                    }
 
+                        // 말의 상태값 업데이트
+                        let activeState;
+                        if(this.yutResult.length > 0) {
+                            activeState = true;
+                        } else {
+                            if(this.throwYut) {
+                                activeState = true;
+                            } else {
+                                activeState = false;
+                            }
+                        }
+                        player.updateHorseSelect();
+                        player.checkHorseActive(activeState);
+
+                        // 현재 플레이어가 모든 기회를 소진했을때,
+                        if(this.yutResult.length == 0 && !this.throwYut) {
+                            this.changeCurrent(); // 선수교체
+                            this.throwYut++; // 횟수추가
+                        }
+
+                    })
 
                 }
             }
         }
 
-        // 골인 버튼도 만들어줘야함.
-        // 골인버튼 클릭하면 도착지점까지 움직이고 -> 말 골인 시키고 goal true -> 골인버튼 없애줘야함.
-        // 말이 움직이는 중에도, 윷은 던질 수 있음(근데 이렇게 되면, 말을 잡았을때 기회 추가가 좀 애매함.)
-        // 남의 말을 잡았을때 -> 기회 한번 추가, 다음턴으로 넘기지 않기. 윷던지기 활성화
-        // 그리고 가끔 좌표가 이상하게 나옴..
-
-
-        
     }
 
 }
