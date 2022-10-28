@@ -6,6 +6,7 @@ export class Stage {
         this.selectHorseStatus = false;
 
         this.init();
+
     }
 
     init() {
@@ -106,6 +107,17 @@ export class Stage {
             }
         }
 
+        this.goalBtn = {
+            x: this.startX + this.stageSize + (this.stageSize * 0.08),
+            y: this.startY + this.stageSize,
+            w: 100,
+            h: 30,
+            txt: 'GOAL IN!!',
+            tX: (this.startX + this.stageSize + (this.stageSize * 0.08)) + 50,
+            tY: this.startY + this.stageSize + 20,
+            show: false,
+        }
+
     }
 
     draw(ctx) {
@@ -135,37 +147,61 @@ export class Stage {
             ctx.closePath();
         }
 
+        
+        // 골인 버튼
+        
+        if(this.goalBtn.show) {
+            ctx.beginPath();
+            ctx.fillStyle = 'red';
+            ctx.fillRect(this.goalBtn.x, this.goalBtn.y, this.goalBtn.w, this.goalBtn.h);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = '16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(this.goalBtn.txt, this.goalBtn.tX, this.goalBtn.tY);
+            ctx.closePath();
+        }
+
     }
 
     getCoor(yutResult, horse) {
         let horseNow, horseIdxStart, horseIdxEnd;
         let denote = [];
 
-        // horseNow에 동일한 값을 전부 받아야함.
-        horseNow = this.stageDot.filter(ele => {
-            return ele.x == horse.sX && ele.y == horse.sY;
-        })
-
-        // 좌표값 중복 되는거 처리
-        if((horse.sIdx == this.stageDot[5].idx) || // 오른쪽 상단 점에 위치하면,
-            (horse.sIdx == this.stageDot[10].idx) || // 왼쪽 상단 점에 위치하면,
-            (horse.sIdx == this.stageDot[24].idx)) { // 중간 점에 위치하면,
-            horseNow = horseNow[1];
-        } else if(horse.sIdx == this.stageDot[27].idx) { // 왼쪽 하단 점에 위치하면,
-            horseNow = horseNow[0];
-        } else if(horse.sX == this.stageDot[0].x && horse.sY == this.stageDot[0].y) { // 시작 지점, 골인 지점 좌표라면
-            let startEndIdx = horseNow.findIndex(ele => {
-                return ele.idx == horse.sIdx;
-            })
-            horseNow = horseNow[startEndIdx];
-            // 현재 말의 좌표가 골인지점(sIdx !== 0)이라면, 골인 버튼도 생성해줘야함.
-        } else {
-            horseNow = horseNow[0];
+        switch(horse.sIdx) {
+            case 5:
+                horseNow = 21;
+                break;
+            case 10:
+                horseNow = 28;
+                break;
+            case 24:
+                horseNow = 31;
+                break;
+            default:
+                horseNow = horse.sIdx;
+                break;
         }
 
+
+        // 좌표값 중복 되는거 처리
+        // if((horse.sIdx == 5) || // 오른쪽 상단 점에 위치하면,
+        //     (horse.sIdx == 10) || // 왼쪽 상단 점에 위치하면,
+        //     (horse.sIdx == 24)) { // 중간 점에 위치하면,
+        //     horseNow = horseNow[1];
+        // } else if(horse.sX == this.stageDot[0].x && horse.sY == this.stageDot[0].y) { // 시작 지점, 골인 지점 좌표라면
+        //     let startEndIdx = horseNow.findIndex(ele => {
+        //         return ele.idx == horse.sIdx;
+        //     })
+        //     horseNow = horseNow[startEndIdx];
+        // } else {
+        //     horseNow = horseNow[0];
+        // }
+
         // 지나갈 경로 찾아주기 변수 지정
-        horseIdxStart = horseNow.idx + 1;
+        horseIdxStart = horseNow + 1;
         horseIdxEnd = horseIdxStart + yutResult;
+
         // 지나갈 경로 좌표 담기 위한 반복문
         while (horseIdxStart < horseIdxEnd) {
             if(this.stageDot[horseIdxStart].idx == 27) { // 대각선을 타고 왼쪽 하단 점을 지나가는 루트라면,
@@ -173,13 +209,40 @@ export class Stage {
                 horseIdxEnd = horseIdxStart + (yutResult - denote.length);
             } else if(this.stageDot[horseIdxStart].idx == 20 || this.stageDot[horseIdxStart].idx == 34) { // 골인지점을 지나가는 루트라면,
                 denote.push(this.stageDot[horseIdxStart]);
-                // 여기도 골인 좌표 그려줘야함.
                 break;
             }
             denote.push(this.stageDot[horseIdxStart]);
             horseIdxStart++;
         }
         return denote;
+
+
+        
+        
+
         
     }
+
+    areaIn(x, y) {
+        if(this.goalBtn.x <= x && 
+            this.goalBtn.y <= y && 
+            this.goalBtn.x + this.goalBtn.w >= x && 
+            this.goalBtn.y + this.goalBtn.h >= y &&
+            this.goalBtn.show
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    goal(horse) {
+        this.goalBtn.show = false;
+        horse.forEach(ele => {
+            ele.goal = true;
+            ele.sX = undefined;
+            ele.sY = undefined;
+        })
+    }
+
 }

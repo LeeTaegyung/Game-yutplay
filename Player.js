@@ -87,28 +87,7 @@ export class Player {
             return ele.select == true;
         });
 
-        return select.length ? true : false;
-    }
-
-    horseState(horseIdx, stage) {
-        if(this.checkHorseSelect()) { // 선택한 말이 있다면,
-            if(this.horse[horseIdx].select) { // 현재 선택한 말이 true라면,
-                this.horse[horseIdx].select = false; // select false
-                //선택한 말이 출발지점에 있다면, 다시 대기석으로 돌리기
-                if(this.horse[horseIdx].sIdx == 0) {
-                    this.horse[horseIdx].update(undefined, undefined, undefined);
-                }
-            }
-        } else { // 선택한 말이 없다면,
-            this.horse[horseIdx].select = true; // select false라면
-            //선택한 말이 대기석에 있다면, 출발지점으로 이동
-            if(this.horse[horseIdx].sIdx == undefined) {
-                this.horse[horseIdx].update(stage.stageDot[0].idx, stage.stageDot[0].x, stage.stageDot[0].y);
-            }
-        }
-
-        this.updateHorseSelect();
-
+        return select.length > 0 ? true : false;
     }
 
     updateHorseSelect() {

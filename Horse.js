@@ -27,17 +27,20 @@ export class Horse {
         let txtH = ctx.measureText('M').width;
         ctx.fillStyle = '#fff';
 
-        if(this.active) { // 말 활성화
-            if(this.selectStatus) { // 말 하나라도 선택
-                if(this.select) {
-                    ctx.fillText('select', x, y + txtH / 2);
-                }
-            } else {
-                if(!this.select) { // select 된 말이 없으면,
-                    ctx.fillText('click', x, y + txtH / 2);
+        if(!this.goal) {
+            if(this.active) { // 말 활성화
+                if(this.selectStatus) { // 말 하나라도 선택
+                    if(this.select) {
+                        ctx.fillText('pick', x, y + txtH / 2);
+                    }
+                } else {
+                    if(!this.select) { // select 된 말이 없으면,
+                        ctx.fillText('click', x, y + txtH / 2);
+                    }
                 }
             }
-            
+        } else {
+            ctx.fillText('goal', x, y + txtH / 2);
         }
 
         ctx.closePath();
@@ -50,7 +53,8 @@ export class Horse {
         if(horseX - this.size <= x && 
             horseY - this.size <= y && 
             horseX + this.size >= x && 
-            horseY + this.size >= y
+            horseY + this.size >= y &&
+            !this.goal
         ) {
             return true;
         } else {
@@ -74,6 +78,8 @@ export class Horse {
         this.denoteIdx = 0;
         this.sIdx = this.denote.idx;
 
+        console.log(this.sIdx);
+
         return new Promise(resolve => {
             ani = window.requestAnimationFrame(moveCalc.bind(this));
 
@@ -85,7 +91,6 @@ export class Horse {
                 
                 if(!(this.denote.x == this.sX) || !(this.denote.y == this.sY)) {
                     // 최종 목적지에 도착하지 않았으면
-        
                     if(!(nowRoute.x == this.sX)) {
                         if((nowRoute.x - this.sX) > 0) {
                             this.sX += speed;
@@ -120,6 +125,11 @@ export class Horse {
         
                 } else {
                     // 최종 목적지에 도착하면,
+                    // if(this.sIdx == 20 || this.sIdx == 34) { //
+                    //     this.goal = true;
+                    //     this.sX = undefined;
+                    //     this.sY = undefined;
+                    // }
                     this.select = false;
                     this.denote = undefined;
                     window.cancelAnimationFrame(ani);

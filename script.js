@@ -49,7 +49,7 @@ class YutPlay {
 
         window.requestAnimationFrame(this.animate.bind(this));
 
-
+        console.log(this.stage.stageDot);
     }
 
     resize() {
@@ -160,20 +160,25 @@ class YutPlay {
         for(let i = 0; i < this.players.length; i++) {
             if(this.players[i].current) {
                 for(let v = 0; v < this.players[i].horse.length; v++) {
-                    if(this.players[i].horse[v].areaIn(x, y) && !this.throwYut) {
+                    if(this.players[i].horse[v].areaIn(x, y)) {
                         this.canvas.style = 'cursor: pointer';
                     }
                 }
             }
         }
 
-        
+        // 무브포인트 hover
         if(this.movePoint.length > 0) {
             for(let i = 0; i < this.movePoint.length; i++) {
                 if(this.movePoint[i].areaIn(x,y)) {
                     this.canvas.style = 'cursor: pointer';
                 }
             }
+        }
+        
+        // 골인 버튼 hover
+        if(this.stage.areaIn(x,y)) {
+            this.canvas.style = 'cursor: pointer';
         }
 
     }
@@ -203,81 +208,104 @@ class YutPlay {
 
         // 말 클릭시
         for(let i = 0; i < this.players.length; i++) {
-            if(this.players[i].current) { // 현재 순서인 player
-                for(let v = 0; v < this.players[i].horse.length; v++) {
-                    if(this.players[i].horse[v].areaIn(x, y) && !this.throwYut) { // 말을 클릭했는지 판단 && 윷던지기 기회를 다 소진했는지
+            if(this.players[i].current && this.yutResult.length) {
 
-                        // 이제 여기에 말을 업은 상태인지 아닌지 판별도 해야함.
+                let areaInHorse = this.players[i].horse.filter(item => item.areaIn(x,y) == true);
 
-
-                        // 말의 상태값 체크 및 말 좌표값 업데이트
-                        this.players[i].horseState(v, this.stage);
-
-                        if(this.players[i].checkHorseSelect()) {
-                            // 선택한 말이 있고, 클릭한 그 말이 선택한 말일때,
-                            if(this.players[i].horse[v].select) {
-                                // 옮길수 있는 위치 표시
-                                for(let d = 0; d < this.yutResult.length; d++) {
-                                    this.movePoint[d] = new MovePoint(movePointSize, this.stage.getCoor(this.yutResult[d], this.players[i].horse[v]));
-                                }
+                if(this.players[i].checkHorseSelect()) { // 선택한 말이 하나라도 있으면,
+                    areaInHorse.forEach(ele => {
+                        if(ele.select) {
+                            ele.select = false;
+                            if(ele.sIdx == 0) { // 현재 말이 시작점이면,
+                                ele.update(undefined, undefined, undefined);
                             }
-                        } else {
-                            // 선택한 말이 없을때 movePoint 비움
                             this.movePoint = [];
+                            this.stage.goalBtn.show = false;
                         }
-                    }
+                    })
+
+                } else { // 선택한 말이 하나도 없으면,
+                    areaInHorse.forEach(ele => {
+                        ele.select = true;
+                        if(ele.sIdx == undefined) { // 현재 말이 대기석이면,
+                            ele.update(this.stage.stageDot[0].idx, this.stage.stageDot[0].x, this.stage.stageDot[0].y);
+                        }
+
+                        if(ele.sIdx == 20 || ele.sIdx == 34) { // 현재 말이 골인지점이면,
+                            this.stage.goalBtn.show = true;
+                        } else {
+                            for(let d = 0; d < this.yutResult.length; d++) {
+                                this.movePoint[d] = new MovePoint(movePointSize, this.stage.getCoor(this.yutResult[d], ele));
+                            }
+                        }
+                    })
                 }
+                
+                this.players[i].updateHorseSelect();
             }
         }
-
+        
         // 무브 좌표 클릭시
         if(this.movePoint.length > 0) {
             let player = this.players.find(ele => ele.current == true);
-            let horse = player.horse.find(ele => ele.select == true);
+            let horse = player.horse.filter(ele => ele.select == true);
             for(let s = 0; s < this.movePoint.length; s++) {
                 if(this.movePoint[s].areaIn(x,y)) { // 무브좌표 영역 안이면,
                     let movePoint = this.movePoint[s];
 
                     this.yutResult.splice(s, 1); // 윷의 결과 해당하는 부분 삭제
                     this.movePoint = []; // 무브좌표 초기화
-                    
-                    horse.move(movePoint).then(() => { // 이동이 완료되면,
 
-                        // 상대말을 잡았는지 안잡았는지 검사
-                        let otherPlayer = this.players.find(ele => ele.current == false);
-                        let otherHorse = otherPlayer.horse.filter(ele => ele.sX == movePoint.x && ele.sY == movePoint.y);
-                        if(otherHorse.length >= 1) {
-                            for(let o = 0; o < otherHorse.length; o++) {
-                                otherHorse[o].update(undefined, undefined, undefined);
+                    horse.forEach((ele, idx) => {
+                        ele.move(movePoint).then(() => { // 이동이 완료되면,
+
+                            if((horse.length - 1) == idx) { // 말을 업었을때 중첩으로 일어나기때문에 가장 마지막 말 차례에서 실행,
+                                // 상대말을 잡았는지 안잡았는지 검사
+                                let otherPlayer = this.players.find(ele => ele.current == false);
+                                let otherHorse = otherPlayer.horse.filter(ele => ele.sX == movePoint.x && ele.sY == movePoint.y);
+                                if(otherHorse.length >= 1) {
+                                    for(let o = 0; o < otherHorse.length; o++) {
+                                        otherHorse[o].update(undefined, undefined, undefined); // 상대말 대기실로 이동
+                                    }
+                                    this.throwYut++; // 횟수추가
+                                }
+    
+                                // 말의 상태값 업데이트
+                                let activeState;
+                                if(this.yutResult.length > 0) {
+                                    activeState = true;
+    
+                                } else {
+                                    if(this.throwYut >= 1) {
+                                        activeState = true;
+                                    } else {
+                                        activeState = false;
+                                    }
+                                }
+                                player.updateHorseSelect();
+                                player.checkHorseActive(activeState);
+                                
+                                // 현재 플레이어가 모든 기회를 소진했을때,
+                                if(this.yutResult.length == 0 && this.throwYut == 0) {
+                                    this.changeCurrent(); // 선수교체
+                                    if (this.throwYut == 0) this.throwYut++; // 횟수추가
+                                }
                             }
-                            this.throwYut++;
-                            console.log('상대편 말을 잡았습니다.');
-                        }
-
-                        // 말의 상태값 업데이트
-                        let activeState;
-                        if(this.yutResult.length > 0) {
-                            activeState = true;
-                        } else {
-                            if(this.throwYut) {
-                                activeState = true;
-                            } else {
-                                activeState = false;
-                            }
-                        }
-                        player.updateHorseSelect();
-                        player.checkHorseActive(activeState);
-
-                        // 현재 플레이어가 모든 기회를 소진했을때,
-                        if(this.yutResult.length == 0 && !this.throwYut) {
-                            this.changeCurrent(); // 선수교체
-                            this.throwYut++; // 횟수추가
-                        }
-
+    
+                        })
                     })
 
                 }
             }
+        }
+
+        // 골인 버튼 클릭시
+        if(this.stage.areaIn(x,y)) {
+            let player = this.players.find(ele => ele.current == true);
+            let horse = player.horse.filter(ele => ele.select == true);
+            this.stage.goal(horse);
+            this.changeCurrent(); // 선수교체
+            if (this.throwYut == 0) this.throwYut++; // 횟수추가
         }
 
     }
