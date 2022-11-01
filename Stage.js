@@ -7,6 +7,8 @@ export class Stage {
 
         this.init();
 
+        console.log(this);
+
     }
 
     init() {
@@ -149,7 +151,6 @@ export class Stage {
 
         
         // 골인 버튼
-        
         if(this.goalBtn.show) {
             ctx.beginPath();
             ctx.fillStyle = 'red';
@@ -169,34 +170,19 @@ export class Stage {
         let denote = [];
 
         switch(horse.sIdx) {
-            case 5:
+            case 5: // 오른쪽 상단 점에 위치하면,
                 horseNow = 21;
                 break;
-            case 10:
+            case 10: // 왼쪽 상단 점에 위치하면,
                 horseNow = 28;
                 break;
-            case 24:
+            case 24: // 중간 점에 위치하면,
                 horseNow = 31;
                 break;
             default:
                 horseNow = horse.sIdx;
                 break;
         }
-
-
-        // 좌표값 중복 되는거 처리
-        // if((horse.sIdx == 5) || // 오른쪽 상단 점에 위치하면,
-        //     (horse.sIdx == 10) || // 왼쪽 상단 점에 위치하면,
-        //     (horse.sIdx == 24)) { // 중간 점에 위치하면,
-        //     horseNow = horseNow[1];
-        // } else if(horse.sX == this.stageDot[0].x && horse.sY == this.stageDot[0].y) { // 시작 지점, 골인 지점 좌표라면
-        //     let startEndIdx = horseNow.findIndex(ele => {
-        //         return ele.idx == horse.sIdx;
-        //     })
-        //     horseNow = horseNow[startEndIdx];
-        // } else {
-        //     horseNow = horseNow[0];
-        // }
 
         // 지나갈 경로 찾아주기 변수 지정
         horseIdxStart = horseNow + 1;
@@ -209,18 +195,18 @@ export class Stage {
                 horseIdxEnd = horseIdxStart + (yutResult - denote.length);
             } else if(this.stageDot[horseIdxStart].idx == 20 || this.stageDot[horseIdxStart].idx == 34) { // 골인지점을 지나가는 루트라면,
                 denote.push(this.stageDot[horseIdxStart]);
+                if(horseIdxEnd - horseIdxStart > 1) { // 윷의 이동해야할 값이 남으면(1이상이면) undefined 넣어주기
+                    denote.push({idx: undefined, x: undefined, y: undefined});
+                }
+                
                 break;
             }
             denote.push(this.stageDot[horseIdxStart]);
             horseIdxStart++;
         }
+
         return denote;
 
-
-        
-        
-
-        
     }
 
     areaIn(x, y) {
@@ -240,6 +226,7 @@ export class Stage {
         this.goalBtn.show = false;
         horse.forEach(ele => {
             ele.goal = true;
+            ele.select = false;
             ele.sX = undefined;
             ele.sY = undefined;
         })

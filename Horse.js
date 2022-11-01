@@ -75,61 +75,56 @@ export class Horse {
     move(denote) {
         let ani;
         this.denote = denote; // 목적지
-        this.denoteIdx = 0;
+        this.denoteIdx = 0; // 목적지 경로의 인덱스값(초기화)
         this.sIdx = this.denote.idx;
-
-        console.log(this.sIdx);
 
         return new Promise(resolve => {
             ani = window.requestAnimationFrame(moveCalc.bind(this));
 
             function moveCalc() {
-                let nowRoute = this.denote.route[this.denoteIdx];
-                let speed = 3;
+                let nowRoute = this.denote.route[this.denoteIdx]; // 목적지의 경로중 하나를 변수에 담아줌.
+                let speed = 3; // 말의 이동 속도
                 
                 ani = window.requestAnimationFrame(moveCalc.bind(this));
                 
+                // 최종 목적지의 좌표와 매칭이 되지 않으면,
                 if(!(this.denote.x == this.sX) || !(this.denote.y == this.sY)) {
-                    // 최종 목적지에 도착하지 않았으면
+                    // 최종 목적지에 도착하지 않았으면(좌표 x)
                     if(!(nowRoute.x == this.sX)) {
-                        if((nowRoute.x - this.sX) > 0) {
+                        if((nowRoute.x - this.sX) > 0) { // x가 플러스일때(오른쪽으로 이동하면),
                             this.sX += speed;
-                            if(nowRoute.x <= this.sX) {
+                            if(nowRoute.x <= this.sX) { // 계산된 값이 최종목적지를 지나칠때 최종목적지 좌표로 넣어주기
                                 this.sX = nowRoute.x;
                             }
-                        } else if((nowRoute.x - this.sX) < 0) {
+                        } else if((nowRoute.x - this.sX) < 0) { // x가 마이너스일때(왼쪽으로 이동하면),
                             this.sX -= speed;
-                            if(nowRoute.x >= this.sX) {
+                            if(nowRoute.x >= this.sX) { // 계산된 값이 최종목적지를 지나칠때 최종목적지 좌표로 넣어주기
                                 this.sX = nowRoute.x;
                             }
                         }
                     }
         
+                    // 최종 목적지에 도착하지 않았으면(좌표 y)
                     if(!(nowRoute.y == this.sY)) {
-                        if((nowRoute.y - this.sY) > 0) {
+                        if((nowRoute.y - this.sY) > 0) { // y가 플러스일때(위로 이동하면),
                             this.sY += speed;
-                            if(nowRoute.y <= this.sY) {
+                            if(nowRoute.y <= this.sY) { // 계산된 값이 최종목적지를 지나칠때 최종목적지 좌표로 넣어주기
                                 this.sY = nowRoute.y;
                             }
-                        } else if((nowRoute.y - this.sY) < 0) {
+                        } else if((nowRoute.y - this.sY) < 0) { // y가 마이너스일때(밑으로 이동하면),
                             this.sY -= speed;
-                            if(nowRoute.y >= this.sY) {
+                            if(nowRoute.y >= this.sY) { // 계산된 값이 최종목적지를 지나칠때 최종목적지 좌표로 넣어주기
                                 this.sY = nowRoute.y;
                             }
                         }
                     }
         
-                    if((nowRoute.x == this.sX) && (nowRoute.y == this.sY)) {
-                        this.denoteIdx++;
+                    if((nowRoute.x == this.sX) && (nowRoute.y == this.sY)) { // 현재 목적지의 경로에 도착하면,
+                        this.denoteIdx++; // 다음 목적지의 경로를 불러옴
                     }
         
                 } else {
                     // 최종 목적지에 도착하면,
-                    // if(this.sIdx == 20 || this.sIdx == 34) { //
-                    //     this.goal = true;
-                    //     this.sX = undefined;
-                    //     this.sY = undefined;
-                    // }
                     this.select = false;
                     this.denote = undefined;
                     window.cancelAnimationFrame(ani);
