@@ -48,7 +48,6 @@ class YutPlay {
         }
 
         window.requestAnimationFrame(this.animate.bind(this));
-
     }
 
     resize() {
@@ -261,25 +260,27 @@ class YutPlay {
                     horse.forEach((ele, idx) => {
                         ele.move(movePoint).then(() => { // 이동이 완료되면,
 
+                            // 윷결과 이동수가 남으면, (도착지점을 넘어서면), 대기석으로 / goal 표시
+                            if(movePoint.route[movePoint.route.length - 1].idx == undefined) {
+                                if(movePoint.idx == 34 || movePoint.idx == 20) {
+                                    ele.update(undefined, undefined, undefined);
+                                    ele.goal = true;
+                                }
+                            }
+
                             if((horse.length - 1) == idx) { // 말을 업었을때 중첩으로 일어나기때문에 가장 마지막 말 차례에서 실행,
                                 
-                                // 윷결과 이동수가 남으면, (도착지점을 넘어서면), 대기석으로 / goal 표시
-                                if(movePoint.route[movePoint.route.length - 1].idx == undefined) {
-                                    if(movePoint.idx == 34 || movePoint.idx == 20) {
-                                        ele.update(undefined, undefined, undefined);
-                                        ele.goal = true;
+                                
+                                // 상대말을 잡았는지 안잡았는지 검사
+                                let otherPlayer = this.players.find(ele => ele.current == false); // 상대 플레이어
+                                let otherHorse = otherPlayer.horse.filter(ele => ele.sX == movePoint.x && ele.sY == movePoint.y); // 상대 플레이어의 말의 좌표값으로 비교
+                                if(otherHorse.length >= 1) { // 상대말을 잡았다면,
+                                    for(let o = 0; o < otherHorse.length; o++) {
+                                        otherHorse[o].update(undefined, undefined, undefined); // 상대말 대기실로 이동
                                     }
-                                } else {
-                                    // 상대말을 잡았는지 안잡았는지 검사
-                                    let otherPlayer = this.players.find(ele => ele.current == false); // 상대 플레이어
-                                    let otherHorse = otherPlayer.horse.filter(ele => ele.sX == movePoint.x && ele.sY == movePoint.y); // 상대 플레이어의 말의 좌표값으로 비교
-                                    if(otherHorse.length >= 1) { // 상대말을 잡았다면,
-                                        for(let o = 0; o < otherHorse.length; o++) {
-                                            otherHorse[o].update(undefined, undefined, undefined); // 상대말 대기실로 이동
-                                        }
-                                        this.throwYut++; // 횟수추가
-                                    }
+                                    this.throwYut++; // 횟수추가
                                 }
+                                
     
                                 // 말의 상태값 업데이트
                                 let activeState;
@@ -351,13 +352,78 @@ class YutPlay {
         this.players.forEach(p => {
             let goalHorse = p.horse.filter(h => h.goal == true);
             if(goalHorse.length == 4) {
-                
+                this.confetti();
+                this.whoWinner(p.name);
             }
         })
+    }
 
-        let winnerPlayer = document.createElement('div');
-        winnerPlayer.classList.add('winner');
-        document.body.append(winnerPlayer);
+    whoWinner(name) {
+        const winnerBox = document.createElement('div');
+        winnerBox.classList.add('winnerBox');
+        winnerBox.style.position = 'absolute';
+        winnerBox.style.left = '0px';
+        winnerBox.style.top = '0px';
+        winnerBox.style.right = '0px';
+        winnerBox.style.bottom = '0px';
+        winnerBox.style.display = 'flex';
+        winnerBox.style.justifyContent = 'center';
+        winnerBox.style.alignItems = 'center';
+        winnerBox.style.flexDirection = 'column';
+        winnerBox.style.backgroundColor = 'rgba(255, 255, 255, .8)';
+        this.target.append(winnerBox);
+
+        const winnerTitle = document.createElement('h1');
+        winnerTitle.classList.add('winnerTitle');
+        winnerTitle.style.fontSize = '40px';
+        winnerTitle.style.marginBottom = '20px';
+        winnerTitle.textContent = 'Winner';
+
+        const winnerUser = document.createElement('strong');
+        winnerUser.classList.add('winnerName');
+        winnerUser.style.display = 'block';
+        winnerUser.style.fontSize = '30px';
+        winnerUser.style.padding = '5px 20px 10px';
+        winnerUser.style.border = '1px solid black';
+        winnerUser.style.lineHeight = '1.2';
+        winnerUser.textContent = name;
+
+        winnerBox.append(winnerTitle);
+        winnerBox.append(winnerUser);
+
+    }
+
+    confetti() {
+        let confettiArea = document.createElement('div');
+        confettiArea.classList.add('confetti-container');
+        document.body.append(confettiArea);
+
+        const confettiColors = ['#EF2964', '#00C09D', '#2D87B0', '#48485E','#EFFF1D'];
+        const confettiAnimations = ['slow', 'medium', 'fast'];
+        
+        const confettiAction = setInterval(() => {
+            const confettiEl = document.createElement('div');
+            const confettiSize = (Math.floor(Math.random() * 3) + 7) + 'px';
+            const confettiBackground = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+            const confettiLeft = (Math.floor(Math.random() * confettiArea.offsetWidth)) + 'px';
+            const confettiAnimation = Math.floor(Math.random() * confettiAnimations.length);
+
+            confettiEl.classList.add('confetti');
+            confettiEl.style.width = confettiSize;
+            confettiEl.style.height = confettiSize;
+            confettiEl.style.backgroundColor = confettiBackground;
+            confettiEl.style.left = confettiLeft;
+            confettiEl.classList.add(confettiAnimations[confettiAnimation]);
+
+            setTimeout(() => {
+                confettiEl.parentNode.removeChild(confettiEl);
+            }, 3000);
+
+            confettiArea.append(confettiEl);
+
+        }, 25)
+
+
     }
 
 }
