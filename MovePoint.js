@@ -15,16 +15,16 @@ export class MovePoint {
     }
     draw(ctx) {
 
-        ctx.font = '12px sans-serif';
+        ctx.font = '12px "Gowun Dodum"';
         let txtH = ctx.measureText('M').width;
 
-        ctx.fillStyle = 'pink';
+        ctx.fillStyle = 'green';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.denoteSize, 0, 2 * Math.PI);
         ctx.fill();
         ctx.closePath();
         
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = '#fff';
         ctx.fillText('이동', this.x, this.y + txtH / 2);
     }
     areaIn(x, y) {

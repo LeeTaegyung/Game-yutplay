@@ -35,7 +35,7 @@ export class Player {
             tX: this.waitingX + (this.waitingWidth / 2),
             tY: this.waitingY + (waitingTextHeight / 3 * 2),
             txt: this.name,
-            font: '13px sans-serif',
+            font: '13px "Gowun Dodum"',
         }
         
         this.horse = [];

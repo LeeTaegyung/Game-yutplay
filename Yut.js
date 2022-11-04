@@ -56,7 +56,7 @@ export class Yut {
             h: this.utilHeight,
             tX: this.utilX + (this.utilWidth / 2),
             tY: this.utilY + this.utilHeight / 2 + 6,
-            font: '16px sans-serif',
+            font: '16px "Gowun Dodum"',
             txt: '윷던지기'
         }
 

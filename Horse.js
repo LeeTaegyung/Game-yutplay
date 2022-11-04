@@ -23,7 +23,7 @@ export class Horse {
         ctx.fill();
 
         // 글자표시
-        ctx.font = '12px sans-serif';
+        ctx.font = '12px "Gowun Dodum"';
         let txtH = ctx.measureText('M').width;
         ctx.fillStyle = '#fff';
 
