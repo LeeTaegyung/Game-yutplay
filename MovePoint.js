@@ -15,11 +15,17 @@ export class MovePoint {
     }
     draw(ctx) {
 
-        ctx.fillStyle = '#00ffff';
+        ctx.font = '12px sans-serif';
+        let txtH = ctx.measureText('M').width;
+
+        ctx.fillStyle = 'pink';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.denoteSize, 0, 2 * Math.PI);
         ctx.fill();
         ctx.closePath();
+        
+        ctx.fillStyle = '#000';
+        ctx.fillText('이동', this.x, this.y + txtH / 2);
     }
     areaIn(x, y) {
         if(this.x - this.denoteSize <= x && 

@@ -1,49 +1,54 @@
 import { Horse } from './Horse.js';
 
 export class Player {
-    constructor(name, color, waitingX, waitingY, waitingWidth, waitingHeight) {
+    constructor(name, color, waitingX, waitingY, waitingWidth, waitingHeight, horseCount) {
         this.name = name;
         this.color = color;
         this.current = false;
         this.waitingX = waitingX;
         this.waitingY = waitingY;
         this.waitingWidth = waitingWidth;
-        this.waitingHeight = waitingHeight;
+        // this.waitingHeight = waitingHeight;
+        this.horseCount = horseCount;
 
         this.init();
     }
 
     init() {
+        // 플레이어 말 좌표값 설정
         const waitingTextHeight = 24;
+        const horseMargin = 3;
+        const horseArea = (this.waitingWidth - (horseMargin * 2)) / 2;
+        const horseAreaCenter = horseArea / 2;
+        const horseSize = horseArea - (horseMargin * 2);
+        const horseWaitingX = this.waitingX + horseMargin + horseAreaCenter;
+        const horseWaitingY = this.waitingY + waitingTextHeight + horseMargin + horseAreaCenter;
+
         // 플레이어 대기석 좌표
         this.waiting = {
             x: this.waitingX,
             y: this.waitingY,
             w: this.waitingWidth,
-            h: this.waitingHeight,
-            inh: this.waitingHeight - waitingTextHeight,
+            // h: this.waitingHeight,
+            inh: waitingTextHeight + horseArea * Math.round(this.horseCount / 2) + horseMargin * 2,
             th: waitingTextHeight,
             tX: this.waitingX + (this.waitingWidth / 2),
             tY: this.waitingY + (waitingTextHeight / 3 * 2),
             txt: this.name,
             font: '13px sans-serif',
         }
-
-        // 플레이어 말 좌표값 설정
-        const horseSize = Math.min(this.waiting.inh / 2 * 0.8, this.waitingWidth / 2 * 0.8) / 2;
-        const horseWaitingX = this.waitingX + this.waitingWidth / 4;
-        const horseWaitingY = this.waitingY + this.waiting.th + this.waiting.inh/4;
         
         this.horse = [];
 
-        for(let i = 0; i < 4; i++) {
-            let x = i % 2 ? 0 : this.waitingWidth / 2;
-            let y = i < 2 ? 0 : this.waiting.inh / 2;
-            let wX = horseWaitingX + x;
-            let wY = horseWaitingY + y;
+        for(let i = 0; i < this.horseCount; i++) {
+            let x = i % 2;
+            let y = Math.floor(i / 2);
+            let wX = horseWaitingX + (horseArea * x);
+            let wY = horseWaitingY + (horseArea * y);
 
-            this.horse[i] = new Horse(wX, wY, this.color, horseSize);
+            this.horse[i] = new Horse(wX, wY, this.color, horseSize/2);
         }
+
         
     }
 
@@ -54,7 +59,7 @@ export class Player {
 
         ctx.fillStyle = '#252525';
         ctx.strokeStyle = '#252525';
-        ctx.strokeRect(this.waiting.x, this.waiting.y, this.waiting.w, this.waiting.h);
+        ctx.strokeRect(this.waiting.x, this.waiting.y, this.waiting.w, this.waiting.inh);
         ctx.fillRect(this.waiting.x, this.waiting.y, this.waiting.w, this.waiting.th);
 
         ctx.fillStyle = '#fff';

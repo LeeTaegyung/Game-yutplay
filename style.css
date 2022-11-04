@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
 * {
     margin: 0;
     padding: 0;
+    font-family: 'Gowun Dodum', sans-serif;
     box-sizing: border-box;
 }
 html, body {
@@ -12,6 +14,31 @@ body {
     align-items: center;
     justify-content: center;
 }
+label {
+    display: block;
+    width: 100%;
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    flex: 0 0 auto;
+}
+input {
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid #333;
+    font-size: 20px;
+    text-align: center;
+    border-radius: 0;
+    outline: 0;
+}
+button {
+    outline: 0;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+}
 .yutplay {
     position: relative;
     border: 3px solid #252525;
@@ -21,6 +48,54 @@ body {
 }
 canvas {
     display: block;
+}
+
+.custom_wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.custom_wrap .input_row {
+    width: 50%;
+    padding: 0 20px;
+}
+.custom_wrap .input_row input {
+    display: block;
+    width: 100%;
+}
+.custom_wrap .horse_row input {
+    display: inline-block;
+    width: 50px;
+    margin: 0 10px;
+    vertical-align: middle;
+}
+.custom_wrap .horse_row .plus_btn,
+.custom_wrap .horse_row .minus_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    color: #fff;
+    font-size: 24px;
+    background: #333;
+    vertical-align: middle;
+}
+.custom_wrap .start_btn {
+    display: block;
+    width: 100%;
+    height: 40px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    background: #333;
 }
 
 .confetti-container {
