@@ -1,14 +1,13 @@
 import { Horse } from './Horse.js';
 
 export class Player {
-    constructor(name, color, waitingX, waitingY, waitingWidth, waitingHeight, horseCount) {
+    constructor(name, color, waitingX, waitingY, waitingWidth, horseCount) {
         this.name = name;
         this.color = color;
         this.current = false;
         this.waitingX = waitingX;
         this.waitingY = waitingY;
         this.waitingWidth = waitingWidth;
-        // this.waitingHeight = waitingHeight;
         this.horseCount = horseCount;
 
         this.init();
@@ -29,11 +28,10 @@ export class Player {
             x: this.waitingX,
             y: this.waitingY,
             w: this.waitingWidth,
-            // h: this.waitingHeight,
             inh: waitingTextHeight + horseArea * Math.round(this.horseCount / 2) + horseMargin * 2,
             th: waitingTextHeight,
             tX: this.waitingX + (this.waitingWidth / 2),
-            tY: this.waitingY + (waitingTextHeight / 3 * 2),
+            tY: this.waitingY + (waitingTextHeight / 2),
             txt: this.name,
             font: '13px "Gowun Dodum"',
         }

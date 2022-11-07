@@ -55,8 +55,8 @@ export class Yut {
             w: this.utilWidth,
             h: this.utilHeight,
             tX: this.utilX + (this.utilWidth / 2),
-            tY: this.utilY + this.utilHeight / 2 + 6,
-            font: '16px "Gowun Dodum"',
+            tY: this.utilY + this.utilHeight / 2,
+            font: '20px "Gowun Dodum"',
             txt: '윷던지기'
         }
 
@@ -158,7 +158,6 @@ export class Yut {
 
     }
 
-
     draw(ctx) {
         
         // 윷던지기 버튼 그리기
@@ -233,5 +232,26 @@ export class Yut {
         }
     }
 
+    getYutText(num) {
+        let yutText;
+        switch(num) {
+            case 1:
+                yutText = '도';
+                break;
+            case 2:
+                yutText = '개';
+                break;
+            case 3:
+                yutText = '걸';
+                break;
+            case 4:
+                yutText = '윷';
+                break;
+            case 5:
+                yutText = '모';
+                break;
+        }
+        return yutText;
+    }
 
 }

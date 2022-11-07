@@ -31,16 +31,16 @@ export class Horse {
             if(this.active) { // 말 활성화
                 if(this.selectStatus) { // 말 하나라도 선택
                     if(this.select) {
-                        ctx.fillText('선택', x, y + txtH / 2);
+                        ctx.fillText('선택', x, y);
                     }
                 } else {
                     if(!this.select) { // select 된 말이 없으면,
-                        ctx.fillText('클릭', x, y + txtH / 2);
+                        ctx.fillText('클릭', x, y);
                     }
                 }
             }
         } else {
-            ctx.fillText('골인', x, y + txtH / 2);
+            ctx.fillText('골인', x, y);
         }
 
         ctx.closePath();

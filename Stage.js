@@ -107,14 +107,15 @@ export class Stage {
             }
         }
 
+        const goalBtnHeight = 30;
         this.goalBtn = {
             x: this.startX + this.stageSize + (this.stageSize * 0.08),
             y: this.startY + this.stageSize,
             w: 100,
-            h: 30,
+            h: goalBtnHeight,
             txt: 'GOAL IN!!',
             tX: (this.startX + this.stageSize + (this.stageSize * 0.08)) + 50,
-            tY: this.startY + this.stageSize + 20,
+            tY: this.startY + this.stageSize + goalBtnHeight/2,
             show: false,
         }
 

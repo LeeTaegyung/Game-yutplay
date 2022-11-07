@@ -1,11 +1,12 @@
 export class MovePoint {
-    constructor(denoteSize, moveCoor, arrival) {
+    constructor(denoteSize, moveCoor, arrival, movePointTxt) {
         this.arrival = arrival;
         this.denoteSize = denoteSize;
         this.x = moveCoor[moveCoor.length-1].x; // 도착 x
         this.y = moveCoor[moveCoor.length-1].y; // 도착 y
         this.idx = moveCoor[moveCoor.length-1].idx; // 도착 idx
         this.route = moveCoor; // 경로
+        this.movePointTxt = movePointTxt;
         
         if(this.x == undefined && this.y == undefined) {
             this.x = this.arrival.x;
@@ -15,8 +16,7 @@ export class MovePoint {
     }
     draw(ctx) {
 
-        ctx.font = '12px "Gowun Dodum"';
-        let txtH = ctx.measureText('M').width;
+        ctx.font = '14px "Gowun Dodum"';
 
         ctx.fillStyle = 'green';
         ctx.beginPath();
@@ -25,7 +25,7 @@ export class MovePoint {
         ctx.closePath();
         
         ctx.fillStyle = '#fff';
-        ctx.fillText('이동', this.x, this.y + txtH / 2);
+        ctx.fillText(this.movePointTxt, this.x, this.y);
     }
     areaIn(x, y) {
         if(this.x - this.denoteSize <= x && 

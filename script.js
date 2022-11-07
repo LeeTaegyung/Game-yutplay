@@ -16,14 +16,12 @@ class YutPlay {
 
         this.horseMinCount = opt.horseMinCount || 2;
         this.horseMaxCount = opt.horseMaxCount || 6;
-
         
         this.gameStart = false;
         this.yutResult = [];
         this.throwYut = 1;
 
         this.movePoint = [];
-
 
         this.init();
         this.resize();
@@ -33,7 +31,6 @@ class YutPlay {
         
         this.stage = new Stage(this.stageSize, this.stageX, this.stageY);
         this.yut = new Yut(this.canvas.width, this.canvas.height, this.utilX, this.utilY, this.utilWidth, this.utilHeight);
-
 
     }
 
@@ -61,8 +58,8 @@ class YutPlay {
         document.querySelector('.start_btn').addEventListener('click', () => {
             const p1Name = document.querySelector('.player1').value;
             const p2Name = document.querySelector('.player2').value;
-            this.player1Name = p1Name || 'player1';
-            this.player2Name = p2Name || 'player2';
+            this.player1Name = p1Name || '선수 1';
+            this.player2Name = p2Name || '선수 2';
             this.horseCount = horseCountInput.value;
 
             document.querySelector('.custom_wrap').remove();
@@ -85,7 +82,7 @@ class YutPlay {
                     waitingY = this.playerY2;
                 }
     
-                this.players[i] = new Player(name, color, waitingX, waitingY, this.waitingWidth, 0, this.horseCount);
+                this.players[i] = new Player(name, color, waitingX, waitingY, this.waitingWidth, this.horseCount);
             }
             this.current = this.player1Name;
 
@@ -168,10 +165,9 @@ class YutPlay {
         this.stageSize = this.stageSize > this.innerHeight * 0.75 ? this.innerHeight * 0.75 : this.stageSize;
 
         const UtilMargin = 30; // 윷던지기 관련 영역 여백
-        const UtilHeight = 50; // 윷던지기 관련 영역 높이
+        const UtilHeight = 40; // 윷던지기 관련 영역 높이
         const WaitingMargin = this.innerWidth * 0.05; // 대기석 여백
         const WaitingWidth = this.innerWidth * 0.15; // 대기석 가로사이즈
-        // const WaitingHeight = this.innerHeight * 0.25; // 대기석 세로사이즈
         const StartY = (this.canvas.height - (this.stageSize + UtilMargin + UtilHeight)) / 2;
         const StartX = (this.canvas.width - (this.stageSize + WaitingMargin * 2 + WaitingWidth * 2)) / 2;
 
@@ -180,7 +176,6 @@ class YutPlay {
         this.stageX = StartX + WaitingMargin + WaitingWidth;
 
         this.waitingWidth = WaitingWidth;
-        // this.waitingHeight = WaitingHeight;
 
         // 플레이어1 대기석 시작 좌표
         this.playerY1 = StartY;
@@ -215,10 +210,31 @@ class YutPlay {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        this.ctx.textBaseline = 'middle';
+
         this.stage.draw(this.ctx);
 
         for(let i = 0; i < this.players.length; i++) {
             this.players[i].draw(this.ctx);
+        }
+        
+        //윷 결과 텍스트
+        if(this.yutResult.length > 0) {
+            this.ctx.beginPath();
+            this.ctx.font = '16px "Gowun Dodum"';
+
+            let yutResultTxtX = this.utilX;
+            let yutResultTxtY = this.utilY + this.utilHeight / 4 * 6;
+            let yutResultTxtHeight = this.ctx.measureText('M').width;
+            let currentPlayer = this.players.find(ele => ele.current == true);
+
+            for(let i = 0; i < this.yutResult.length; i++) {
+                let x = yutResultTxtX + ((yutResultTxtHeight + 10) * i);
+                let y = yutResultTxtY;
+                this.ctx.fillStyle = currentPlayer.color;
+                this.ctx.fillText(this.yut.getYutText(this.yutResult[i]), x, y)
+            }
+            this.ctx.closePath();
         }
 
         this.yut.draw(this.ctx);
@@ -304,7 +320,8 @@ class YutPlay {
                         this.throwYut++; // 기회 추가
                     }
     
-                    if(!this.throwYut) this.checkCurrent();
+                    // if(!this.throwYut) this.checkCurrent();
+                    this.checkCurrent();
                     this.yutResult.push(val);
                 });
     
@@ -341,7 +358,7 @@ class YutPlay {
                             } else {
                                 // 무브포인트 생성
                                 for(let d = 0; d < this.yutResult.length; d++) {
-                                    this.movePoint[d] = new MovePoint(movePointSize, this.stage.getCoor(this.yutResult[d], ele), this.stage.stageDot[34]);
+                                    this.movePoint[d] = new MovePoint(movePointSize, this.stage.getCoor(this.yutResult[d], ele), this.stage.stageDot[34], this.yut.getYutText(this.yutResult[d]));
                                 }
                             }
                         })
@@ -386,7 +403,6 @@ class YutPlay {
                                         }
                                         this.throwYut++; // 횟수추가
                                     }
-                                    
         
                                     // 말의 상태값 업데이트
                                     let activeState;
@@ -452,7 +468,6 @@ class YutPlay {
                 this.winner();
             }
         }
-
     }
 
     winner() {
@@ -497,7 +512,6 @@ class YutPlay {
 
         winnerBox.append(winnerTitle);
         winnerBox.append(winnerUser);
-
     }
 
     confetti() {
