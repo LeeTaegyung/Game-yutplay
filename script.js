@@ -89,7 +89,7 @@ class YutPlay {
             window.requestAnimationFrame(this.animate.bind(this));
 
         }, false)
-        
+
     }
 
     createCustom() {
@@ -398,10 +398,13 @@ class YutPlay {
                                     let otherPlayer = this.players.find(ele => ele.current == false); // 상대 플레이어
                                     let otherHorse = otherPlayer.horse.filter(ele => ele.sX == movePoint.x && ele.sY == movePoint.y); // 상대 플레이어의 말의 좌표값으로 비교
                                     if(otherHorse.length >= 1) { // 상대말을 잡았다면,
-                                        for(let o = 0; o < otherHorse.length; o++) {
-                                            otherHorse[o].update(undefined, undefined, undefined); // 상대말 대기실로 이동
-                                        }
-                                        this.throwYut++; // 횟수추가
+                                        this.catch().then(() => {
+                                            for(let o = 0; o < otherHorse.length; o++) {
+                                                otherHorse[o].update(undefined, undefined, undefined); // 상대말 대기실로 이동
+                                            }
+                                            this.throwYut++; // 횟수추가
+                                        });
+                                        
                                     }
         
                                     // 말의 상태값 업데이트
@@ -545,6 +548,20 @@ class YutPlay {
         }, 25)
 
 
+    }
+
+    catch() {
+        return new Promise(resolve => {
+            const catchTxt = document.createElement('div');
+            catchTxt.textContent = '잡았다!';
+            catchTxt.classList.add('catch');
+            this.target.append(catchTxt);
+
+            setTimeout(function(){
+                catchTxt.remove();
+                resolve();
+            }, 1500)
+        })
     }
 
 }
