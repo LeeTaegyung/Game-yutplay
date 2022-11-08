@@ -71,6 +71,11 @@ export class Player {
         for(let i = 0; i < this.horse.length; i++) {
             this.horse[i].draw(ctx);
         }
+
+        if(this.checkSameHorse()) {
+        //     console.log(this.sameHorse);
+        }
+        
         
     }
 
@@ -100,5 +105,26 @@ export class Player {
         }
     }
 
+    checkSameHorse() { // 업은 말 개수 표시를 위한 함수
+        const horse = this.horse;
+        // let sameHorse = [];
+        // let sameHorseCompare = [];
+        // for(let i = 0; i < horse.length; i++) {
+        //     for(let v = 0; v < horse.length; v++) {
+
+        //         if(i == v) continue;
+
+        //         if(horse[i].sX == undefined && horse[i].sY == undefined) continue;
+        //         if(horse[i].sX == horse[v].sX && horse[i].sY == horse[v].sY) {
+        //             sameHorseCompare.push(horse[v]);
+        //         }
+        //     }
+        //     sameHorse.push(sameHorseCompare);
+        // }
+
+        // this.sameHorse = sameHorse;
+
+        // return (sameHorse.length >= 1) ? true : false;
+    }
 
 }

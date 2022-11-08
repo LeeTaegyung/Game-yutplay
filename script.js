@@ -39,7 +39,7 @@ class YutPlay {
 
         let horseCountBtn = document.querySelectorAll('.horse_row button');
         let horseCountInput = document.querySelector('.horse_custom');
-        horseCountBtn.forEach(ele => {
+        horseCountBtn.forEach(ele => { // 말의 개수 설정
             ele.addEventListener('click', () => {
                 if(ele.classList.contains('minus_btn')) {
                     if(horseCountInput.value > this.horseMinCount) {
@@ -55,7 +55,7 @@ class YutPlay {
             })
         })
 
-        document.querySelector('.start_btn').addEventListener('click', () => {
+        document.querySelector('.start_btn').addEventListener('click', () => { // 게임 시작
             const p1Name = document.querySelector('.player1').value;
             const p2Name = document.querySelector('.player2').value;
             this.player1Name = p1Name || '선수 1';
@@ -320,8 +320,8 @@ class YutPlay {
                         this.throwYut++; // 기회 추가
                     }
     
-                    // if(!this.throwYut) this.checkCurrent();
-                    this.checkCurrent();
+                    if(!this.throwYut) this.checkCurrent();
+                    // this.checkCurrent();
                     this.yutResult.push(val);
                 });
     
@@ -329,7 +329,7 @@ class YutPlay {
     
             // 말 클릭시
             for(let i = 0; i < this.players.length; i++) {
-                if(this.players[i].current && this.yutResult.length && this.throwYut == 0) {
+                if(this.players[i].current && this.yutResult.length >= 1 && this.throwYut == 0) {
     
                     // 클릭한 x,y 좌표에 있는 말들을 배열에 담음.
                     let areaInHorse = this.players[i].horse.filter(item => item.areaIn(x,y) == true);
@@ -403,31 +403,55 @@ class YutPlay {
                                                 otherHorse[o].update(undefined, undefined, undefined); // 상대말 대기실로 이동
                                             }
                                             this.throwYut++; // 횟수추가
+
+                                            // 말의 상태값 업데이트
+                                            let activeState;
+                                            if(this.yutResult.length > 0) { // 말 결과값이 1개 이상 있다면
+                                                activeState = true; // 말 활성화 true
+                
+                                            } else { // 말 결과값이 없다면
+                                                if(this.throwYut >= 1) { // 윷 던질 기회가 생겼다면, 말 활성화 true
+                                                    activeState = true;
+                                                } else { // 윷 던질기회도 없다면, 말 활성화 false
+                                                    activeState = false;
+                                                }
+                                            }
+            
+                                            player.updateHorseSelect();
+                                            player.checkHorseActive(activeState);
+                                            
+                                            // 현재 플레이어가 모든 기회를 소진했을때,
+                                            if(this.yutResult.length == 0 && this.throwYut == 0) {
+                                                this.changeCurrent(); // 선수교체
+                                                if (this.throwYut == 0) this.throwYut++; // 횟수추가
+                                            }
+
                                         });
                                         
-                                    }
+                                    } else { // 상대말을 안잡았을떄
+                                        // 말의 상태값 업데이트
+                                        let activeState;
+                                        if(this.yutResult.length > 0) { // 말 결과값이 1개 이상 있다면
+                                            activeState = true; // 말 활성화 true
+            
+                                        } else { // 말 결과값이 없다면
+                                            if(this.throwYut >= 1) { // 윷 던질 기회가 생겼다면, 말 활성화 true
+                                                activeState = true;
+                                            } else { // 윷 던질기회도 없다면, 말 활성화 false
+                                                activeState = false;
+                                            }
+                                        }
         
-                                    // 말의 상태값 업데이트
-                                    let activeState;
-                                    if(this.yutResult.length > 0) { // 말 결과값이 1개 이상 있다면
-                                        activeState = true; // 말 활성화 true
-        
-                                    } else { // 말 결과값이 없다면
-                                        if(this.throwYut >= 1) { // 윷 던질 기회가 생겼다면, 말 활성화 true
-                                            activeState = true;
-                                        } else { // 윷 던질기회도 없다면, 말 활성화 false
-                                            activeState = false;
+                                        player.updateHorseSelect();
+                                        player.checkHorseActive(activeState);
+                                        
+                                        // 현재 플레이어가 모든 기회를 소진했을때,
+                                        if(this.yutResult.length == 0 && this.throwYut == 0) {
+                                            this.changeCurrent(); // 선수교체
+                                            if (this.throwYut == 0) this.throwYut++; // 횟수추가
                                         }
                                     }
-    
-                                    player.updateHorseSelect();
-                                    player.checkHorseActive(activeState);
-                                    
-                                    // 현재 플레이어가 모든 기회를 소진했을때,
-                                    if(this.yutResult.length == 0 && this.throwYut == 0) {
-                                        this.changeCurrent(); // 선수교체
-                                        if (this.throwYut == 0) this.throwYut++; // 횟수추가
-                                    }
+        
                                 }
     
                                 this.winner();
@@ -465,7 +489,7 @@ class YutPlay {
                 player.updateHorseSelect();
                 player.checkHorseActive(activeState);
                 
-                this.changeCurrent(); // 선수교체
+                if(this.yutResult.length >= 1) this.changeCurrent(); // 선수교체
                 if (this.throwYut == 0) this.throwYut++; // 횟수추가
     
                 this.winner();
