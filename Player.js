@@ -72,8 +72,20 @@ export class Player {
             this.horse[i].draw(ctx);
         }
 
-        if(this.checkSameHorse()) {
-        //     console.log(this.sameHorse);
+        if(this.checkDupHorse()) {
+            this.sameHorseResult.forEach(ele => {
+                const size = ele[0].size;
+                let x = ele[0].sX + size;
+                let y = ele[0].sY + size;
+
+                ctx.beginPath();
+                ctx.fillStyle = '#000';
+                ctx.fillRect(ele[0].sX + size/2 - 2, ele[0].sY + size/2 - 2, 14, 14);
+                ctx.fillStyle = '#fff';
+                ctx.font = '14px "Gowun Dodum"';
+                ctx.fillText(ele.length, x, y);
+                ctx.closePath();
+            })
         }
         
         
@@ -105,26 +117,33 @@ export class Player {
         }
     }
 
-    checkSameHorse() { // 업은 말 개수 표시를 위한 함수
+    checkDupHorse() { // 업은 말 개수 표시를 위한 함수
         const horse = this.horse;
-        // let sameHorse = [];
-        // let sameHorseCompare = [];
-        // for(let i = 0; i < horse.length; i++) {
-        //     for(let v = 0; v < horse.length; v++) {
 
-        //         if(i == v) continue;
+        let sameHorse = horse.filter(ele => ele);
+        let sameHorseFilter = [];
+        let sameHorseFilterIdx = [];
+        this.sameHorseResult = [];
 
-        //         if(horse[i].sX == undefined && horse[i].sY == undefined) continue;
-        //         if(horse[i].sX == horse[v].sX && horse[i].sY == horse[v].sY) {
-        //             sameHorseCompare.push(horse[v]);
-        //         }
-        //     }
-        //     sameHorse.push(sameHorseCompare);
-        // }
+        horse.forEach((ele, i) => {
+            sameHorseFilter = [];
+            sameHorseFilterIdx = [];
+            sameHorse.forEach((ele2, v) => {
+                if(!(ele.sX === undefined && ele.sY === undefined)) {
+                    if(ele.sX == ele2.sX && ele.sY == ele2.sY) {
+                        sameHorseFilter.push(ele2);
+                        sameHorseFilterIdx.push(v);
+                    }
+                }
+            })
+            
+            sameHorseFilterIdx.forEach(eleIdx => {
+                sameHorse.splice(eleIdx, 1);
+            })
+            if(sameHorseFilter.length > 1) this.sameHorseResult.push(sameHorseFilter);
+        })
 
-        // this.sameHorse = sameHorse;
-
-        // return (sameHorse.length >= 1) ? true : false;
+        return (this.sameHorseResult.length >= 1) ? true : false;
     }
 
 }

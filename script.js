@@ -315,13 +315,13 @@ class YutPlay {
                 this.throwYut--; // 기회 차감
                 
                 this.yut.play().then((val) => { // 애니메이션이 끝나고 값이 결정되면, 결과값 추가 및 현재 플레이어 확인,
+
+                    if(!this.throwYut) this.checkCurrent();
     
                     if(val == 4 || val == 5) { // 윷이나 모가 나오면,
                         this.throwYut++; // 기회 추가
                     }
-    
-                    if(!this.throwYut) this.checkCurrent();
-                    // this.checkCurrent();
+
                     this.yutResult.push(val);
                 });
     
@@ -489,7 +489,7 @@ class YutPlay {
                 player.updateHorseSelect();
                 player.checkHorseActive(activeState);
                 
-                if(this.yutResult.length >= 1) this.changeCurrent(); // 선수교체
+                if(this.yutResult.length == 0) this.changeCurrent(); // 선수교체
                 if (this.throwYut == 0) this.throwYut++; // 횟수추가
     
                 this.winner();
