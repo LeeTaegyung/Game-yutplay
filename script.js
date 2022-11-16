@@ -451,6 +451,8 @@ class YutPlay {
                                             if (this.throwYut == 0) this.throwYut++; // 횟수추가
                                         }
                                     }
+
+                                    player.checkDupHorse();
         
                                 }
     

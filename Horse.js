@@ -1,9 +1,11 @@
 export class Horse {
-    constructor(wX, wY, bgColor, size) {
+    constructor(wX, wY, bgColor, size, idx) {
+        this.idx = idx;
         this.wX = wX;
         this.wY = wY;
         this.sX = undefined;
         this.sY = undefined;
+        this.sIdx = undefined;
         this.bgColor = bgColor;
         this.size = size;
         this.active = false;

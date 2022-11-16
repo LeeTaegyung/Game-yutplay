@@ -9,6 +9,7 @@ export class Player {
         this.waitingY = waitingY;
         this.waitingWidth = waitingWidth;
         this.horseCount = horseCount;
+        this.sameHorseFilterArr = [];
 
         this.init();
     }
@@ -44,7 +45,7 @@ export class Player {
             let wX = horseWaitingX + (horseArea * x);
             let wY = horseWaitingY + (horseArea * y);
 
-            this.horse[i] = new Horse(wX, wY, this.color, horseSize/2);
+            this.horse[i] = new Horse(wX, wY, this.color, horseSize/2, i);
         }
 
         
@@ -72,15 +73,17 @@ export class Player {
             this.horse[i].draw(ctx);
         }
 
-        if(this.checkDupHorse()) {
-            this.sameHorseResult.forEach(ele => {
+        if(this.sameHorseFilterArr.length >= 1) {
+            this.sameHorseFilterArr.forEach(ele => {
                 const size = ele[0].size;
-                let x = ele[0].sX + size;
-                let y = ele[0].sY + size;
+                const rectX = ele[0].sX + size/2 - 2;
+                const rectY = ele[0].sY + size/2 - 2;
+                const x = ele[0].sX + size;
+                const y = ele[0].sY + size;
 
                 ctx.beginPath();
                 ctx.fillStyle = '#000';
-                ctx.fillRect(ele[0].sX + size/2 - 2, ele[0].sY + size/2 - 2, 14, 14);
+                ctx.fillRect(rectX, rectY, 14, 14);
                 ctx.fillStyle = '#fff';
                 ctx.font = '14px "Gowun Dodum"';
                 ctx.fillText(ele.length, x, y);
@@ -120,30 +123,31 @@ export class Player {
     checkDupHorse() { // 업은 말 개수 표시를 위한 함수
         const horse = this.horse;
 
-        let sameHorse = horse.filter(ele => ele);
+        let sameHorse = horse.filter(() => true);
         let sameHorseFilter = [];
-        let sameHorseFilterIdx = [];
-        this.sameHorseResult = [];
+        this.sameHorseFilterArr = [];
 
-        horse.forEach((ele, i) => {
+        horse.forEach(ele => {
             sameHorseFilter = [];
-            sameHorseFilterIdx = [];
-            sameHorse.forEach((ele2, v) => {
-                if(!(ele.sX === undefined && ele.sY === undefined)) {
-                    if(ele.sX == ele2.sX && ele.sY == ele2.sY) {
-                        sameHorseFilter.push(ele2);
-                        sameHorseFilterIdx.push(v);
+            if(!(ele.sIdx === undefined)) { // 스테이지 위에 있을때
+                sameHorseFilter = sameHorse.filter((sameEle) => { // 같은 좌표를 가졌을때, sameHorseFilter에 값을 담음
+                    if(ele.sIdx === sameEle.sIdx) {
+                        return sameEle;
                     }
+                })
+            }
+
+            if(sameHorseFilter.length > 1) { // 같은 좌표에 말2개 이상 담겼을때,
+                for(let i = 0; i < sameHorseFilter.length; i++) {
+                    sameHorse = sameHorse.filter(eleIdx => { // 중복으로 담기는걸 피하기 위해서 비교되는 배열의 해당 말 삭제. 말의 배열이 담긴 순서대로 하고 splice를 하려니깐 생각한대로 삭제 되지 않아서 말에 idx 부여
+                        return sameHorseFilter[i].idx != eleIdx.idx;
+                    })
                 }
-            })
-            
-            sameHorseFilterIdx.forEach(eleIdx => {
-                sameHorse.splice(eleIdx, 1);
-            })
-            if(sameHorseFilter.length > 1) this.sameHorseResult.push(sameHorseFilter);
+                this.sameHorseFilterArr.push(sameHorseFilter);
+            }
+
         })
 
-        return (this.sameHorseResult.length >= 1) ? true : false;
     }
 
 }
